@@ -1,0 +1,42 @@
+### cssSelector
+id定位：#id
+class定位：.class 多个class则将空格换成"."，例如 <a class="a b c"></a> ==> $(".a.b.c")
+标签定位：input
+属性定位：input[type='submit']
+
+### 层级定位
+后代选择器(以空格分隔)
+例如：div#app a            获取id属性为app的div元素中的所有后代a元素(直接子代、孙子代、祖孙代等等)
+
+子元素选择器(以大于号分隔）
+例如：div#app>a            获取id属性为app的div元素中的所有直接子代a元素
+
+相邻兄弟选择器（以加号分隔）
+例如：div#app+div          获取id属性为app的div元素之后同级且相邻的第一个div元素
+后续兄弟选择器（以小波浪号分隔）
+例如：div#app~div          获取id属性为app的div元素之后同级的所有div元素
+
+### n 从1开始
+nth-child(n)   匹配属于其父元素的第 N 个子元素
+nth-last-child(n)，如字面意思：倒数第几个标签
+nth-of-type(n)，第 N 个指定类型的标签
+first-child,第一个标签
+last-child,最后一个标签
+
+### xpath
+"/"：        表示节点路径
+"//"：       表示所有路径以"//"后指定的子路径结尾的元素
+"*"：        表示路径通配符
+".":         表示当前节点
+"..":        表示父节点
+
+### 位置匹配
+/A/B/C[1]               表示A元素→B元素→第一个C元素
+/A/B/C[last()]          表示A元素→B元素→最后一个C元素
+
+### 属性及运算符
+//B[@id="b1" or @id="b2"] id值为b1或为b2的B元素
+
+### 层级匹配
+//div[@class='ws']/div[2]/a
+//div[@id='a']/../../*

@@ -1,0 +1,115 @@
+### 概述
+接口文档在线自动生成，文档随接口变动实时更新，节省维护成本
+支持在线接口测试，不依赖第三方工具
+
+### 依赖
+<!-- Swagger -->
+<dependency>
+    <groupId>com.spring4all</groupId>
+    <artifactId>swagger-spring-boot-starter</artifactId>
+    <version>1.9.1.RELEASE</version>
+</dependency>
+或
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger-ui</artifactId>
+    <version>2.9.2</version>
+</dependency>
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger2</artifactId>
+    <version>2.9.2</version>
+</dependency>
+<!-- 整合swagger报guava错时，引入该依赖解决问题 -->
+<dependency>
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <version>28.0-jre</version>
+</dependency>
+
+### 配置类SwaggerConfig
+
+### 常用注解
+@Api：用在请求的类上，表示对类的说明
+    tags：说明该类的作用，可以在UI界面上看到的注解
+    value：该参数没什么意义，在UI界面上也看到，所以不需要配置
+
+@ApiOperation：用在请求的方法上，说明方法的用途、作用
+    value：说明方法的用途、作用
+    notes：方法的备注说明
+
+@ApiParam：用在方法参数上；表示对参数进行说明(推荐用@ApiImplicitParam)
+    name：参数名
+    value：参数说明
+    required：是否必填
+    type：参数类型，String、Long等
+    defaultValue：默认值
+    example：参数举例
+
+@ApiImplicitParams：用在请求的方法上，表示一组参数说明
+    @ApiImplicitParam：用在@ApiImplicitParams注解中，指定一个请求参数的各个方面
+        name：参数名
+        value：参数的汉字说明、解释
+        required：参数是否必须传
+        paramType：参数放在哪个地方
+            · header --> 请求参数的获取：@RequestHeader
+            · query --> 请求参数的获取：@RequestParam
+            · path --> 请求参数的获取：@PathVariable
+            · body --> 请求参数的获取：@RequestBody
+            · form（不常用）
+        dataType：参数类型，String、Long等(dataType="Integer"有时候会请求失败，统一用String或Long类型)
+        defaultValue：参数的默认值
+        example：举例说明
+
+@ApiResponses：用在请求的方法上，表示一组响应
+    @ApiResponse：用在@ApiResponses中，一般用于表达一个错误的响应信息
+        code：数字，例如400
+        message：信息，例如"请求参数没填好"
+        response：抛出异常的类
+
+@ApiModel：用于响应类上，表示一个返回响应数据的信息（这种一般用在post创建的时候，使用@RequestBody这样的场景，请求参数无法使用@ApiImplicitParam注解进行描述的时候）
+    @ApiModelProperty：用在属性上，描述响应类的属性
+        value：字段说明
+        name：重写属性名字
+        dataType：重写属性类型
+        required：是否必填
+        example：举例说明
+
+### 测试SwaggerController
+
+### 浏览器上访问：localhost:端口号/swagger-ui.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

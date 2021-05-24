@@ -1,0 +1,11 @@
+### 自定义过滤器
+
+### LoginFilter：实现Filter接口
+
+### FilterConfig：注册MyFilter交给Spring容器管理
+
+### FilterController 测试
+先访问：http://localhost:8080/filter/look       提示：no_login，过滤器起作用了
+再访问：http://localhost:8080/filter/login      显示：登录成功，过期时间60s，请求路径在白名单中，可以访问
+再访问：http://localhost:8080/filter/look       显示：LOGIN！随便看看
+过60s访问：http://localhost:8080/filter/look    又是no_login

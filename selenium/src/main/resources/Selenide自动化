@@ -1,0 +1,59 @@
+### 依赖
+<dependency>
+    <groupId>com.codeborne</groupId>
+    <artifactId>selenide</artifactId>
+    <version>5.16.2</version>
+</dependency>
+<!-- 使用代理` -->
+<dependency>
+    <groupId>com.browserup</groupId>
+    <artifactId>browserup-proxy-core</artifactId>
+    <version>2.1.1</version>
+</dependency>
+
+### 参数配置 查看 com.codeborne.selenide.Configuration
+
+### 常用方法 Selenide
+open("url");        打开地址
+refresh()           刷新
+back()              后退
+forward()           前进
+$("")               定位元素(返回第一个满足条件的元素对象)
+$$("")              定位元素(返回所有满足条件的元素集合对象)
+switchTo().window(1)切换窗口
+sleep()             线程休眠
+screenshot(String fileName)：截图
+
+### 元素定位
+$(String cssSelector) - $符号默认参数是“CSS”，返回SelenideElement类的对象，SelenideElement继承WebElement，该对象表示页面上CSS选择器找到的第一个元素。
+$(By) - 由By类的定位器返回“first SelenideElement”。
+$x("//*[text()=‘Sign in’]")) -通过Xpath定位
+$$("#search-results a") 二级查找
+
+### 元素操作
+setValue()                    设置value
+getValue/val()                获取value
+getText()/text()              获取文本
+getAttribute()/attr()         获取属性值
+pressEnter()                  按回车
+pressEscape()
+pressTab()
+click()                       点击左键
+contextClick()                点击右键
+doubleClick()                 双击
+hover()                       鼠标悬停
+exists()                      元素是否存在
+parent()                      父级元素
+sibling()                     相邻元素
+preceding()                   前面的
+lastChild()                   最后一个
+executeJavaScript（String jsCode，Object … arguments） 执行js代码
+
+### 条件 Condition
+should()
+shouldHave()
+shouldNotHave()
+shouldBe()
+shouldNotBe()
+waitUntil()
+

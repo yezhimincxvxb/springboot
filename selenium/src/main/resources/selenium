@@ -1,0 +1,119 @@
+### 概述
+一套软件工具，用来支持不同的自动化测试方法
+
+### 依赖
+<!-- selenium-java -->
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>3.141.59</version>
+</dependency>
+
+### 定位
+定位方法                                Java语言实现实例
+id 定位                       driver.findElement(By.id(“id的值”))；
+name定位                      driver.findElement(By.name(“name的值”))；
+链接的全部文字定位             driver.findElement(By.linkText(“链接的全部文字”))；
+链接的部分文字定位             driver.findElement(By.partialLinkText(“链接的部分文字”))；
+css 方式定位                  driver.findElement(By.cssSelector(“css表达式”))；
+xpath 方式定位                driver.findElement(By.xpath(“xpath表达式”))；
+Class 名称定位                driver.findElement(By.className(“class属性”))；
+TagName 标签名称定位          driver.findElement(By.tagName(“标签名称”))；
+
+
+### 等待
+在实际测试过程中，由于网速或性能方面的原因，打开相应的网页后或在网页上做了相应的操作，网页上的元素可能不会马上加载出来，
+这个时候需要在定位元素前等待一下，等元素加载出来后再进行定位，根据实际使用选择需要的等待方式。
+## 强制等待
+Thread.sleep(10 * 1000);
+## 隐式等待
+隐式等待只能作用于元素的等待。
+
+如果元素在指定的时间内找到，则不会继续等待，否则在指定时间内未找到元素则抛出NoSuchElementException。
+作用域是全局的,跟driver的生命周期一样,一般定义在父类中,只要设置隐式等待后,页面所有的元素都会被绑定这种等待机制,只需设置一次,
+全局有效(只作用于元素),直到driver实例被关闭。
+
+//隐式等待等待5秒
+driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+## 显示等待
+除了作用于元素等待还可以实现各种场景的等待，例如页面加载等。
+智能的等待方式,元素在指定的时间内找到,则不会继续等待，否则抛出TimeOutException。
+非全局设置,可以针对不同的元素绑定不同的等待机制。
+
+//显式等待3秒
+WebDriverWait wait = new WebDriverWait(driver, 3);
+//3秒内找不到此元素，TimeOutException报错
+wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.name("wd")))
+
+扩展
+ExpectedConditions其他用法
+1. titleIs判断当前页面的title是否等于预期。
+2. titleContains判断当前页面的title是否包含预期字符串。
+3. urlToBe判断当前页面的url是否等于预期。
+4. urlContains判断当前页面的url是否包含预期字符串。
+5. presenceOfElementLocated判断元素是否出现，出现就通过。
+6. visibilityOfElementLocated判断某个元素是否可见，可见代表元素非隐藏。
+7. elementToBeSelected页面元素处于被选中状态   。
+
+
+### 下拉框
+一、通过text定位
+//获取下拉框对象
+Select city = new Select(driver.findElement(By.name("city")));
+//通过text值定位
+city.selectByVisibleText("驻马店");
+
+二、通过value定位
+//获取下拉框对象
+Select city = new Select(driver.findElement(By.name("city")));
+//通过value值定位
+city.selectByValue("SH");
+
+三、通过索引定位
+//获取下拉框对象
+Select city = new Select(driver.findElement(By.name("city")));
+//通过索引定位
+city.selectByIndex(1);
+
+### 键盘与鼠标
+## 键盘事件
+ctrl+a：driver.findElement(By.id("kw")).sendKeys(Keys.CONTROL, "a");
+ctrl+x：driver.findElement(By.id("kw")).sendKeys(Keys.CONTROL, "x");
+ctrl+c：driver.findElement(By.id("kw")).sendKeys(Keys.CONTROL, "c");
+ctrl+v：driver.findElement(By.id("kw")).sendKeys(Keys.CONTROL, "v");
+F键 需要使用F1-F12：driver.findElement(By.id("kw")).sendKeys(Keys.F5);
+TAB键：driver.findElement(By.id("kw")).sendKeys(Keys.TAB);
+回车键：driver.findElement(By.id("kw")).sendKeys(Keys.ENTER);
+空格键：driver.findElement(By.id("kw")).sendKeys(Keys.SPACE);
+## 鼠标事件
+右键点击
+Actions actions = new Actions(driver);
+actions.contextClick(element).perform();
+
+左键单击
+Actions actions = new Actions(driver);
+actions.clickAndHold(element).perform();
+
+鼠标双击
+Actions actions = new Actions(driver);
+actions.doubleClick(element).perform();
+
+鼠标悬停
+Actions actions = new Actions(driver);
+actions.moveToElement(element).perform();
+
+### 常用方法
+打开网站：driver.get("https://www.baidu.com/");
+获取当前网页title：driver.getTitle()
+获取当前driver对象的text值：driver.getText()
+对元素做单点操作：driver.click();
+清空元素内容：driver.clear();
+获取当前网页地址：driver.getCurrentUrl();
+对元素做输出，可以输入字符，也可输入键盘的特殊操作，亦可加上路径做为上传文件：driver.sendKeys();
+获取driver中某个属性的值：driver.getAttribute();
+打开网址，类似与get方法：driver.navigate().to();
+进入下个页面，相等于浏览器上的前进按钮：driver.navigate().forward();
+退回到上个页面，相当于浏览器后退按钮：driver.navigate().back();
+刷新页面：driver.navigate().refresh();
+form表单提交：driver.submit();
+关闭当前driver对象：driver.close();

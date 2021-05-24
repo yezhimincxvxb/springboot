@@ -1,0 +1,7 @@
+### 定义事件：MyApplicationEvent 继承 ApplicationEvent
+
+### 监听事件：MyApplicationListener 实现 ApplicationListener
+
+### 事件发布：MyPublisher
+
+### 事件只有发布了才会被监听，即每次监听事件都需要重新发布一下
