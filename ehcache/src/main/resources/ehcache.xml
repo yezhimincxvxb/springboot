@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="ehcache_test">
+
+    <!--
+        磁盘存储路径，当内存缓存满了的时候，就会往这里面放
+        diskStore:为缓存路径，ehcache分为内存和磁盘 2级，此属性定义磁盘的缓存位置
+        user.home - 用户主目录
+        user.dir - 用户当前工作目录
+        java.io.tmpdir - 默认临时文件路径
+    -->
+    <diskStore path="java.io.tmpdir"/>
+
+    <!--
+        name:缓存名称。
+        eternal:对象是否永久有效，一但设置了，timeout将不起作用。
+        maxElementsInMemory:内存最大缓存元素个数
+        maxElementsOnDisk：磁盘最大缓存元素个数。
+        overflowToDisk:内存不足时，是否保存到磁盘
+        timeToIdleSeconds:空闲时间（单位：秒）。仅当eternal=false时有效，默认值是0，也就是可空闲时间无穷大。(创建开始计时，每次查询都会重新计时)
+        timeToLiveSeconds:存活时间（单位：秒）。仅当eternal=false时有效，默认值是0，也就是可存活时间无穷大。(创建开始计时，不会重新计时)
+        diskPersistent：是否缓存虚拟机重启期数据 Whether the disk store persists between restarts of the Virtual Machine. The default value is false.
+        diskSpoolBufferSizeMB：这个参数设置DiskStore（磁盘缓存）的缓存区大小。默认是30MB。每个Cache都应该有自己的一个缓冲区。
+        diskExpiryThreadIntervalSeconds：磁盘失效线程运行时间间隔，默认是120秒。(清理超过空闲、存活时间的缓存)
+        clearOnFlush：内存数量最大时是否清除。
+        memoryStoreEvictionPolicy：当达到maxElementsInMemory限制时，Ehcache将会根据指定的策略去清理内存。默认策略是LRU（最近最少使用）。你可以设置为FIFO（先进先出）或是LFU（较少使用）。
+            FIFO，first in first out，先进先出算法，即先放入缓存的先被移除；
+            LFU， Less Frequently Used，最久未使用算法，使用时间距离现在最久的那个被移除；
+            LRU， Least Recently Used，最近最少使用的，一定时间段内使用次数（频率）最少的那个被移除；
+    -->
+    <!-- 默认缓存区 -->
+    <defaultCache
+            eternal="false"
+            maxElementsInMemory="1000"
+            overflowToDisk="true"
+            maxElementsOnDisk="10000"
+            diskPersistent="false"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <!-- 自定义缓存区 需要设置name-->
+    <cache
+            name="user_cache"
+            eternal="false"
+            maxElementsInMemory="100"
+            overflowToDisk="true"
+            maxElementsOnDisk="1000"
+            diskPersistent="false"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="300"
+            memoryStoreEvictionPolicy="LRU"
+    />
+
+</ehcache>
