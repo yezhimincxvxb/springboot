@@ -23,6 +23,7 @@
         <module>swagger</module>
         <module>validation</module>
         <module>ehcache</module>
+        <module>druid</module>
     </modules>
 
     <properties>

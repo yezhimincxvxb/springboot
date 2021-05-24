@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.145.11:3306/demo?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+    username: root
+    password: 1234
+    hikari:
+      pool-name: HikariCPDataSource
+      maximum-pool-size: 10
+      minimum-idle: 4
+      connection-timeout: 60000
+      idle-timeout: 300000
+      max-lifetime: 600000
+      connection-test-query: select 1
+      connection-init-sql: select 1
+      validation-timeout: 30000
+
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  type-aliases-package: com.yzm.druid.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0

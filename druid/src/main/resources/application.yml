@@ -1,0 +1,52 @@
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      name: DruidDataSource
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://192.168.145.11:3306/demo?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+      username: root
+      password: 1234
+      initial-size: 2
+      max-active: 8
+      min-idle: 4
+      max-wait: 60000
+      keep-alive: true
+      keep-alive-between-time-millis: 60000
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 1
+      validation-query-timeout: 60000
+      connection-init-sqls: select 1
+      filters: stat,wall,config,
+      filter:
+        wall:
+          enabled: true
+          db-type: mysql
+          config:
+            delete-allow: false
+            drop-table-allow: false
+        stat:
+          enabled: true
+          db-type: mysql
+          merge-sql: true
+          log-slow-sql: true
+          slow-sql-millis: 10000
+        config:
+          enabled: true
+
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  type-aliases-package: com.yzm.druid.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
