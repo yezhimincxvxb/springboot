@@ -20,6 +20,8 @@
         <module>common</module>
         <module>annotation</module>
         <module>selenium</module>
+        <module>swagger</module>
+        <module>validation</module>
     </modules>
 
     <properties>
