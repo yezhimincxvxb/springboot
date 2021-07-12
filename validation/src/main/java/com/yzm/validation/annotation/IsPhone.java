@@ -1,7 +1,7 @@
 package com.yzm.validation.annotation;
 
 
-import com.yzm.validation.annotation.validator.IsPhoneValidator;
+import com.yzm.validation.validator.IsPhoneValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

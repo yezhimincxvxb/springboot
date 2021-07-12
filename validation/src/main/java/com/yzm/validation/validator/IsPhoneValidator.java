@@ -1,4 +1,4 @@
-package com.yzm.validation.annotation.validator;
+package com.yzm.validation.validator;
 
 import com.yzm.validation.annotation.IsPhone;
 import org.springframework.util.StringUtils;
