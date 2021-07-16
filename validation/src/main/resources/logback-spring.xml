@@ -1,44 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
-    <!--
-        scan：当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
-        scanPeriod：设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。
-                    当scan为true时，此属性生效。默认的时间间隔为1分钟。
-        debug：当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
-    -->
 
-    <!-- name的值是变量的名称，value的值时变量定义的值。通过定义的值会被插入到logger上下文中。定义后，可以使“${}”来使用变量。 -->
     <property name="pattern" value="%d{yy/MM/dd HH:mm:ss} %-5level %logger{15}.%method:%L --%msg%n"/>
     <property name="logPath" value="C:/logs"/>
 
-    <!-- 控制台日志：输出所有级别的日志 -->
     <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <!--
-                %d{yyyy-MM-dd HH:mm:ss.SSS}——日志输出时间
-                %-5level——日志级别，并且使用5个字符靠左对齐
-                %thread——输出日志的进程名字，这在Web应用以及异步任务处理中很有用
-                %logger{20}——日志输出者的名字
-                %method——方法
-                %L——行数
-                %msg——日志消息
-                %n——平台的换行符
-                %Color——颜色显示
-            -->
+        <encoder charset='UTF-8'>
             <pattern>
                 %red(%d{yyyy/MM/dd HH:mm:ss}) %blue(%-5level) %green([%thread]) %boldMagenta(%logger{20}.%method):%L --%cyan(%msg%n)
             </pattern>
-        </layout>
+        </encoder>
     </appender>
 
-    <!-- 文件日志：输出ERROR以下的级别日志 -->
     <appender name="infoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- LevelFilter：级别过滤器，根据日志级别进行过滤。如果日志级别等于配置级别，过滤器会根据onMath 和 onMismatch接收或拒绝日志。-->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
-            <!--拒绝-->
             <onMatch>DENY</onMatch>
-            <!--允许-->
             <onMismatch>ACCEPT</onMismatch>
         </filter>
 
@@ -46,28 +23,38 @@
             <pattern>${pattern}</pattern>
         </encoder>
 
-        <!-- 正在记录的日志文件的路径 -->
         <file>${logPath}/info/info.log</file>
 
-        <!-- 设置滚动策略 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- 归档文件路径 -->
             <fileNamePattern>${logPath}/info/info_%d.%i.log</fileNamePattern>
-            <!-- 压缩模式
-            <fileNamePattern>${logPath}/info/info_%d.%i.log.zip</fileNamePattern>
-            -->
-            <!--文件最大保存周期，默认7天-->
             <maxHistory>30</maxHistory>
-            <!--单个文件最大存储-->
-            <maxFileSize>2MB</maxFileSize>
-            <!--所有归档文件总的大小限制-->
+            <maxFileSize>10MB</maxFileSize>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
-    <!-- 文件日志：输出ERROR级别的日志 -->
+    <appender name="debugLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <encoder charset='UTF-8'>
+            <pattern>${pattern}</pattern>
+        </encoder>
+
+        <file>${logPath}/debug/debug.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/debug/debug_%d.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>20MB</maxFileSize>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
     <appender name="errorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- ThresholdFilter：临界值过滤器，过滤掉低于指定临界值的日志。过滤掉所有低于ERROR级别的日志 -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
@@ -86,82 +73,9 @@
         </rollingPolicy>
     </appender>
 
-    <!--
-        <logger>用来设置某一个包或者具体的某一个类的日志打印级别、以及指定<appender>。
-        name:用来指定受此logger约束的某一个包或者具体的某一个类。
-        level:用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，
-              还有一个特殊值INHERITED或者同义词NULL，代表强制执行上级的级别。如果未设置此属性，那么当前logger将会继承上级的级别，具有继承性。
-        additivity:是否向上级logger传递打印信息。默认是true(当为true时，还会被匹配到的root再次输出一次log)。
-        eg：
-        指定项目中某个包，当有日志操作行为时的日志记录级别
-        <logger name="com.sailing.mybatis" level="INFO">
-            <appender-ref ref="infoLog" />
-            <appender-ref ref="errorLog" />
-        </logger>
-
-        利用logback输入mybatis的sql日志，
-        注意：如果不加 additivity="false" 则此logger会将输出转发到自身以及祖先的logger中，就会出现日志文件中sql重复打印
-        <logger name="com.sailing.mybatis.mapper" level="DEBUG" additivity="false">
-            <appender-ref ref="infoLog" />
-            <appender-ref ref="errorLog" />
-        </logger>
-
-         additivity=false代表禁止默认累计的行为，即com.atomikos中的日志只会记录到日志文件中，不会输出层次级别更高的任何appender
-        <logger name="com.atomikos" level="INFO" additivity="false">
-            <appender-ref ref="infoLog" />
-            <appender-ref ref="errorLog" />
-        </logger>
-    -->
-
-    <!--
-        <root>元素配置根记录器
-        日志级别从低到高分为：TRACE < DEBUG < INFO < WARN < ERROR，如果设置为WARN，则低于WARN的信息都不会输出
-        level：用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，不能设置为INHERITED或者同义词NULL。默认是DEBUG。
-        可以包含零个或多个元素，标识这个appender将会添加到根记录器中。
-    -->
     <root level="INFO">
         <appender-ref ref="consoleLog"/>
         <appender-ref ref="infoLog"/>
         <appender-ref ref="errorLog"/>
     </root>
-
-    <!-- 多环境日志
-    测试环境+开发环境. 多个使用逗号隔开.
-    <springProfile name="test,dev">
-        <root level="DEBUG">
-            <appender-ref ref="consoleLog"/>
-        </root>
-    </springProfile>
-    生产环境
-    <springProfile name="prod">
-        <root level="INFO">
-            <appender-ref ref="infoLog"/>
-            <appender-ref ref="errorLog"/>
-        </root>
-    </springProfile>
-    -->
-
-    <!-- 注意
-        e.printStackTrace()只能将错误堆栈信息输出到console不能将错误堆栈信息输出到日志文件中；
-        使用logback框架时，如果既想将错误堆栈信息输出到console，又想将错误堆栈信息输出到日志文件中，
-        那么在传参时，需要将Throwable异常实例也一起传过去
-        try {
-            //...
-        } catch(Exception e) {
-            log.error("不会打印错误堆栈信息到文件");
-			// 控制台打印出错误堆栈信息
-			e.printStackTrace();
-        }
-        try {
-            //...
-        } catch(Exception e) {
-            log.error("会打印错误堆栈信息到文件"，e);
-            或
-            log.error("程序异常, 详细信息:{}", e.getLocalizedMessage() , e);
-			// 控制台打印出错误堆栈信息
-			e.printStackTrace();
-        }
-
-    -->
-
 </configuration>

@@ -25,6 +25,7 @@
         <module>validation</module>
         <module>ehcache</module>
         <module>druid</module>
+        <module>logback</module>
     </modules>
 
     <properties>
