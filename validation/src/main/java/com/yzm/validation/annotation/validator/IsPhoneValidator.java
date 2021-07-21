@@ -1,4 +1,4 @@
-package com.yzm.validation.validator;
+package com.yzm.validation.annotation.validator;
 
 import com.yzm.validation.annotation.IsPhone;
 import org.springframework.util.StringUtils;
@@ -7,6 +7,9 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
+/**
+ * 手机格式校验规则
+ */
 public class IsPhoneValidator implements ConstraintValidator<IsPhone, String> {
 
     // 定义属性来接收注解类的属性下限

@@ -164,6 +164,20 @@
     spring.profiles.active = dev
     -->
 
+    <!--日志异步到数据库 -->
+    <!-- <appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+        日志异步到数据库
+        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+           连接池
+           <dataSource class="com.mchange.v2.c3p0.ComboPooledDataSource">
+              <driverClass>com.mysql.jdbc.Driver</driverClass>
+              <url>jdbc:mysql://127.0.0.1:3306/databaseName</url>
+              <user>root</user>
+              <password>root</password>
+            </dataSource>
+        </connectionSource>
+  </appender> -->
+
     <!-- 注意
         e.printStackTrace()只能将错误堆栈信息输出到console不能将错误堆栈信息输出到日志文件中；
         使用logback框架时，如果既想将错误堆栈信息输出到console，又想将错误堆栈信息输出到日志文件中，
@@ -186,5 +200,7 @@
         }
 
     -->
+
+
 
 </configuration>

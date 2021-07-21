@@ -74,7 +74,7 @@ public class ValidationController {
     @PostMapping(path = "/test05")
     public void test05(@RequestBody @Validated(value = {Insert.class}) ValidGroup group) {
         //指定Insert分组，Insert继承Default
-        //所以ValidGroup对象了的4个属性约束都生效
+        //所以ValidGroup对象的4个属性约束都生效
         System.out.println("group = " + group);
     }
 

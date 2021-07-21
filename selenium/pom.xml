@@ -17,7 +17,7 @@
     <description>Demo project for Spring Boot</description>
 
     <dependencies>
-        <!-- selenium-java -->
+        <!-- selenium自动化-java -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>

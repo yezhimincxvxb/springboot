@@ -28,13 +28,16 @@
 ### @Validated
 当Controller层中方法参数是一个对象时，需要将@Validated直接放在该对象前，该对象内部的字段才会被校验
 当一些约束是直接出现在Controller层中的参数前时，只有将@Validated放在Controller类上时，参数前的约束才会生效。
+
 ==================================================================================================================================================================
 ### 分组 Object.class：必须是一个接口(ValidGroup)
 在Bean中可以指定字段验证所属的groups、在请求参数中可以指定应用哪种groups进行验证，只会触发相应的groups进行验证；
 若未指定groups则默认属于组javax.validation.groups.Default
 @Validated(value = {Insert.class}
+
 @NotBlank(groups = {Insert.class, Update.class}, message = "username不能为空")
 private String username;
+
 ==================================================================================================================================================================
 ### 异常处理 ValidateExceptionHandler
 
