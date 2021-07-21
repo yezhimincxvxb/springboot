@@ -1,4 +1,4 @@
-package com.yzm.validation.annotation;
+package com.yzm.validation.annotation.order;
 
 import javax.validation.GroupSequence;
 import javax.validation.groups.Default;
@@ -10,6 +10,6 @@ import javax.validation.groups.Default;
  * <p>
  * 那么，如果我们的需求是先校验@NotNull，再校验@NotBlank，最后校验@NotEmpty。validation-api能否做到这一点呢？答案是：能。这就要用到validation-api提供的 @GroupSequence 注解了。
  */
-@GroupSequence({First.class, Second.class, Third.class, Default.class})
+@GroupSequence({First.class, Second.class, Default.class})
 public interface GroupOrder {
 }

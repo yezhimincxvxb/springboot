@@ -1,4 +1,4 @@
-package com.yzm.validation.annotation;
+package com.yzm.validation.annotation.group;
 
 import javax.validation.groups.Default;
 

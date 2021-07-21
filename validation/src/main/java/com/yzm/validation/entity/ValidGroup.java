@@ -1,7 +1,7 @@
 package com.yzm.validation.entity;
 
-import com.yzm.validation.annotation.Insert;
-import com.yzm.validation.annotation.Update;
+import com.yzm.validation.annotation.group.Insert;
+import com.yzm.validation.annotation.group.Update;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;

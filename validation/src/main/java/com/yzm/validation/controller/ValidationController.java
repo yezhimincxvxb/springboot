@@ -1,9 +1,11 @@
 package com.yzm.validation.controller;
 
-import com.yzm.validation.annotation.Insert;
-import com.yzm.validation.annotation.IsPhone;
-import com.yzm.validation.annotation.Update;
+import com.yzm.validation.annotation.*;
+import com.yzm.validation.annotation.group.Insert;
+import com.yzm.validation.annotation.group.Update;
+import com.yzm.validation.annotation.order.GroupOrder;
 import com.yzm.validation.entity.ValidGroup;
+import com.yzm.validation.entity.ValidOrder;
 import com.yzm.validation.entity.ValidUser;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +39,8 @@ public class ValidationController {
         System.out.println("test01_3：" + name);
     }
 
+    //=======================================================================================================
+
     @GetMapping(path = "/test02")
     public void test02(@NotBlank(message = "姓名不为空") String name) {
         System.out.println("在请求参数前使用约束注解，需要在controller上加@Validated才会生效");
@@ -47,6 +51,8 @@ public class ValidationController {
     public void test02_2(@NotNull @Range(min = 1, max = 10, message = "年龄取值范围在1~10") Integer age) {
         System.out.println(age);
     }
+
+    //=======================================================================================================
 
     @PostMapping(path = "/test03")
     public void test03(@RequestBody ValidUser user) {
@@ -60,6 +66,8 @@ public class ValidationController {
         System.out.println("user = " + user);
     }
 
+    //=======================================================================================================
+
     @GetMapping(path = "/test04")
     public void test04(@RequestParam @Pattern(regexp = "^1\\d{10}$", message = "手机格式错误") String phone) {
         System.out.println("phone = " + phone);
@@ -70,6 +78,8 @@ public class ValidationController {
         System.out.println("自定义的手机号码验证");
         System.out.println("phone = " + phone);
     }
+
+    //=======================================================================================================
 
     @PostMapping(path = "/test05")
     public void test05(@RequestBody @Validated(value = {Insert.class}) ValidGroup group) {
@@ -90,5 +100,11 @@ public class ValidationController {
         System.out.println("group = " + group);
     }
 
+    //=======================================================================================================
+
+    @PostMapping(path = "/test06")
+    public void test06(@RequestBody @Validated(value = {GroupOrder.class}) ValidOrder order) {
+        System.out.println("order = " + order);
+    }
 
 }
