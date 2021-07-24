@@ -17,7 +17,7 @@
     <description>Demo project for Spring Boot</description>
 
     <dependencies>
-        <!-- validation -->
+        <!-- validation2 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>

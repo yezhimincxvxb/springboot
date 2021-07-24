@@ -20,7 +20,7 @@ public class SwaggerController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "第几页", required = false, dataType = "Integer", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "每页显示多少条数据", required = false, dataType = "Integer", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "name", value = "count", required = false, dataType = "String", paramType = "query", defaultValue = "叶")
+            @ApiImplicitParam(name = "name", value = "搜索条件", required = false, dataType = "String", paramType = "query", defaultValue = "叶")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "请求成功"),
@@ -45,34 +45,43 @@ public class SwaggerController {
 
     @ApiOperation(value = "用户详情接口", notes = "根据用户ID查询详情")
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
-    public Integer getUserById(
+    public Long getUserById(
             @ApiParam(name = "userId", value = "用户ID", required = true, type = "long", defaultValue = "10", example = "10")
-            @PathVariable("userId") Integer userId) {
+            @PathVariable("userId") Long userId) {
         log.info("## 请求时间：{}", new Date());
         return userId;
     }
 
     // @ApiParam跟@ApiImplicitParam功能差不多，推荐使用@ApiImplicitParam
     @ApiOperation(value = "删除用户接口", notes = "根据用户ID删除")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "long", paramType = "path", defaultValue = "10", example = "10")
-    })
+    @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "long", paramType = "path", defaultValue = "10", example = "10")
     @DeleteMapping("/{userId}")
-    public Integer removeUserById(@PathVariable("userId") Integer userId) {
+    public Long removeUserById(@PathVariable("userId") Long userId) {
         log.info("## 请求时间：{}", new Date());
         return userId;
     }
 
     @ApiOperation(value = "新增用户接口", notes = "新增用户信息")
+//    @ApiImplicitParam(name = "user", value = "用户实体", required = true, dataTypeClass = User.class, paramType = "body")
     @PostMapping(path = "/save")
     public User saveSwaggerUser(@RequestBody User user, HttpServletRequest request) {
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
-            System.out.println(headerNames.nextElement());
+            String headerName = headerNames.nextElement();
+            System.out.println("参数名：" + headerName + " ==> 参数值：" + request.getHeader(headerName));
         }
         return user;
     }
 
+    @ApiOperation(value = "修改用户接口", notes = "修改用户信息")
+    @PostMapping(path = "/update")
+    public User updateSwaggerUser(
+            @ApiParam(name = "user", value = "用户实体", required = true)
+            @RequestBody User user,
+            @RequestHeader(value = "token", required = false) String token) {
+        System.out.println("token=" + token);
+        return user;
+    }
 
 
 }

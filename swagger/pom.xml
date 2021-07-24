@@ -24,11 +24,18 @@
             <version>1.9.1.RELEASE</version>
         </dependency>
         <!-- 整合swagger报guava错时，引入该依赖解决问题 -->
+<!--        <dependency>-->
+<!--            <groupId>com.google.guava</groupId>-->
+<!--            <artifactId>guava</artifactId>-->
+<!--            <version>28.0-jre</version>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>28.0-jre</version>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>swagger-bootstrap-ui</artifactId>
+            <version>1.9.2</version>
         </dependency>
+
     </dependencies>
 
     <build>
