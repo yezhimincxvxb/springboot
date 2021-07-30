@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hello World</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../css/gtvg.css" th:href="@{/css/gtvg.css}"/>
+</head>
+<body>
+
+<h1>Yzm</h1>
+<h2>Hello in templates</h2>
+
+<p th:utext="#{home.welcome2(${session.user.username})}">消息中添加一个参数（可以指定多个参数，以逗号分隔。）</p>
+<p th:utext="#{${welcomeMsgKey}(${session.user.username})}">消息键本身可以来自一个变量</p>
+
+</body>
+</html>

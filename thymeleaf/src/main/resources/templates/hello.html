@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hello World</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../css/gtvg.css" th:href="@{/css/gtvg.css}"/>
+</head>
+<body>
+
+<h1>Yzm</h1>
+<h2>Hello in templates</h2>
+
+<p th:text="'Hello！' + ${title}">欢迎光临</p>
+<p th:text="#{home.welcome}">welcome</p>
+
+<p th:text="#{home.text}">text 属性会将 HTML 标签进行转义，纯文本、纯字符串</p>
+<p th:utext="#{home.text}">utext 属性保留HTML标签的性质，不进行转义</p>
+
+<p th:text="${#dates.format(date,'dd MMM yyyy')}">dates 格式化</p>
+<p th:text="${#calendars.format(calendar,'yyyy-MM-dd hh:mm:ss')}">calendars 格式化</p>
+
+</body>
+</html>

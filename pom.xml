@@ -26,6 +26,8 @@
         <module>ehcache</module>
         <module>druid</module>
         <module>logback</module>
+        <module>thymeleaf</module>
+        <module>security</module>
     </modules>
 
     <properties>

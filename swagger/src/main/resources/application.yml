@@ -1,9 +1,9 @@
 swagger:
   enabled: true
   #线上环境设置为true屏蔽swagger文档功能
-  production: false
-  #设置访问页面时先登录
-  basic:
-    enable: false
-    username: 12345
-    password: 12345
+#  production: false
+#  #设置访问页面时先登录
+#  basic:
+#    enable: false
+#    username: 12345
+#    password: 12345

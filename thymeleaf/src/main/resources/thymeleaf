@@ -1,0 +1,87 @@
+### 官方网址
+https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html
+
+### 添加依赖
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+
+### 目录结构
+resources
+    msg
+    static(静态资源) 可以直接通过 http://localhost:8080/hello.html 访问
+    templates(模板文件)
+
+### 常用表达式
+#{} 消息表达式
+${} 变量表达式
+*{} 选择表达式
+@{} 链接url表达式
+~{} 片段表达式
+
+###
+# 文字
+    文本字面量：'one text', 'Another one!',...  文本文字只是在单引号之间指定的字符串。它们可以包含任何字符，但您应该使用\'.
+    数字字面量：0, 34, 3.0, 12.3,...            数字文字就是：数字。
+    布尔文字：true,false                        布尔文字是true和false
+    空字面量： null
+    文字标记：one, sometext, main,...           数字、布尔和空文字实际上是文字标记的特例
+                                              这些标记允许在标准表达式中进行一些简化。它们的工作方式与文本字面量 ( '...')完全相同，但它们只允许使用字母
+                                              ( A-Zand a-z)、数字 ( 0-9)、方括号 ( [and ])、点 ( .)、连字符 ( -) 和下划线 ( _)。所以没有空格，没有逗号等。
+# 文字操作：
+    字符串连接： +                              文本，无论是文字还是变量或消息表达式的计算结果，都可以使用+运算符轻松附加：
+    字面替换： |The name is ${name}|           文字替换允许轻松格式化包含变量值的字符串，而无需在文字后附加'...' + '...'.这些替换必须用竖线 | 包围
+             'The name is' + ${user.name}
+# 算术运算：
+    二元运算符：+, -, *, /,%
+    减号（一元运算符）： -
+# 布尔运算：
+    二元运算符：and,or
+    布尔否定（一元运算符）：!,not
+# 比较与相等：
+    比较器：>(&gt;) <(&lt;) >=(&ge;) <=(&le;)
+    等式运算符：==(eq)  !=(ne)
+# 条件运算符：
+    如果-那么： (if) ? (then)
+    如果-然后-其他： (if) ? (then) : (else)
+    默认： (value) ?: (defaultValue)
+
+### 表达式基本对象
+#ctx: 上下文对象。
+#vars: 上下文变量。
+#locale: 上下文语言环境。
+#request：（仅在 Web 上下文中）HttpServletRequest对象。
+#response：（仅在 Web 上下文中）HttpServletResponse对象。
+#session：（仅在 Web 上下文中）HttpSession对象。
+#servletContext：（仅在 Web 上下文中）ServletContext对象。
+
+#execInfo：关于正在处理的模板的信息。
+#messages: 在变量表达式中获取外部化消息的方法，与使用 #{…} 语法获取它们的方式相同。
+#uris: 转义部分 URL/URI 的方法
+#conversions：执行配置的转换服务的方法（如果有）。
+#dates：java.util.Date对象的方法：格式化、组件提取等。
+#calendars: 类似于#dates，但用于java.util.Calendar对象。
+#numbers：格式化数字对象的方法。
+#strings：String对象的方法：contains、startsWith、prepending/appending 等。
+#objects: 一般对象的方法。
+#bools：布尔评估的方法。
+#arrays: 数组的方法。
+#lists: 列表方法。
+#sets: 方法集。
+#maps: 地图方法。
+#aggregates: 在数组或集合上创建聚合的方法。
+#ids：处理可能重复的 id 属性的方法（例如，作为迭代的结果）。
+
+### 常用属性
+th:text             替换文本，文本转义
+th:utext            替换文本，文本不转义
+th:if               满足特定条件时才会出现
+th:unless           不满足特定条件时才会出现
+th:each             迭代
+th:switch/th:case
+
+### 引用模板片段
+
+
+

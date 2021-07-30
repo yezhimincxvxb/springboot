@@ -12,7 +12,7 @@ import java.util.Enumeration;
 
 @Slf4j
 @RestController
-@RequestMapping("/swagger")
+//@RequestMapping("/swagger")
 @Api(value = "用户信息", tags = {"用户信息API"})
 public class SwaggerController {
 
@@ -29,7 +29,7 @@ public class SwaggerController {
             @ApiResponse(code = 404, message = "请求路径不存在"),
             @ApiResponse(code = 500, message = "服务器重启中")
     })
-    @GetMapping
+    @GetMapping("/list/user")
     public ModelMap listUser(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size,
@@ -44,7 +44,7 @@ public class SwaggerController {
     }
 
     @ApiOperation(value = "用户详情接口", notes = "根据用户ID查询详情")
-    @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getOne/{userId}", method = RequestMethod.GET)
     public Long getUserById(
             @ApiParam(name = "userId", value = "用户ID", required = true, type = "long", defaultValue = "10", example = "10")
             @PathVariable("userId") Long userId) {
@@ -55,7 +55,7 @@ public class SwaggerController {
     // @ApiParam跟@ApiImplicitParam功能差不多，推荐使用@ApiImplicitParam
     @ApiOperation(value = "删除用户接口", notes = "根据用户ID删除")
     @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "long", paramType = "path", defaultValue = "10", example = "10")
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/delete/{userId}")
     public Long removeUserById(@PathVariable("userId") Long userId) {
         log.info("## 请求时间：{}", new Date());
         return userId;
@@ -63,7 +63,7 @@ public class SwaggerController {
 
     @ApiOperation(value = "新增用户接口", notes = "新增用户信息")
 //    @ApiImplicitParam(name = "user", value = "用户实体", required = true, dataTypeClass = User.class, paramType = "body")
-    @PostMapping(path = "/save")
+    @PostMapping(path = "/save/user")
     public User saveSwaggerUser(@RequestBody User user, HttpServletRequest request) {
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
@@ -74,13 +74,33 @@ public class SwaggerController {
     }
 
     @ApiOperation(value = "修改用户接口", notes = "修改用户信息")
-    @PostMapping(path = "/update")
+    @PostMapping(path = "/update/user")
     public User updateSwaggerUser(
             @ApiParam(name = "user", value = "用户实体", required = true)
             @RequestBody User user,
             @RequestHeader(value = "token", required = false) String token) {
         System.out.println("token=" + token);
         return user;
+    }
+
+    @ApiOperation(value = "权限", notes = "权限")
+    @GetMapping(path = "/auth/user")
+    public void auth(HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            System.out.println("参数名：" + headerName + " ==> 参数值：" + request.getHeader(headerName));
+        }
+    }
+
+    @ApiOperation(value = "权限", notes = "权限")
+    @GetMapping(path ="/auth123")
+    public void auth2(HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            System.out.println("参数名：" + headerName + " ==> 参数值：" + request.getHeader(headerName));
+        }
     }
 
 

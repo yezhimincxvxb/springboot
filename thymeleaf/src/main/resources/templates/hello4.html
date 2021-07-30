@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Hello World</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../css/gtvg.css" th:href="@{/css/gtvg.css}"/>
+</head>
+<body>
+
+<h1>Yzm</h1>
+
+<a href="details.html" th:href="@{http://localhost:8080/order/info(id=${id})}">1</a>
+</br>
+
+<a href="details.html" th:href="@{/order/info(id=${id})}">2</a>
+</br>
+
+<a href="details.html" th:href="@{/order/info(id=${id},name=${name})}">3</a>
+</br>
+
+<a href="details.html" th:href="@{https://www.baidu.com/}">4</a>
+
+</body>
+</html>
