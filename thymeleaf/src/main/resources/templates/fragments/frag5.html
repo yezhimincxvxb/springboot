@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!--
+    布局继承
+    为了能够将单个文件作为布局，可以使用片段。具有 title 和 content 使用 th:fragment 和的简单布局的示例th:replace：
+
+    此示例声明一个名为 layout 的片段，其中标题和内容为参数。在下面的示例中，这两者都将在页面上被继承的片段表达式替换，并继承它。
+-->
+<html th:replace="~{fragments/layouts :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Page Title</title>
+</head>
+<body>
+<section>
+    <p>Page content</p>
+    <div>Included on page</div>
+</section>
+</body>
+</html>

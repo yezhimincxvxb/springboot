@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!--
+    灵活的布局：不仅仅是片段插入
+
+    借助片段表达式，我们可以为片段指定参数，这些参数不是文本，数字，bean对象……而是标记片段。
+    这允许我们以一种方式来创建我们的片段，以便可以使用来自调用模板的标记来丰富它们，从而产生非常灵活的模板布局机制。
+
+    结果将使用调用模板中的实际 <title> 和 <link> 标记作为 title 和 links 变量的值，从而导致我们的片段在插入过程中被自定义
+-->
+<head th:replace="fragments/header :: common_header(~{::title},~{::link})">
+    <title>Awesome - Main</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/themes/smoothness/jquery-ui.css}">
+</head>
+
+<body>
+
+<h1>Yzm</h1>
+
+</body>
+</html>

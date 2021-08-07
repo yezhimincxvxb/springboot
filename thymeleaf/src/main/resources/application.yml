@@ -4,8 +4,11 @@ spring:
     basename: msg/home
     encoding: UTF-8
   thymeleaf:
+    enabled: true
+    cache: false
+    encoding: UTF-8
+    mode: HTML5
     prefix: classpath:/templates/
     suffix: .html
-    mode: HTML5
-    encoding: UTF-8
-    cache: false
+
+

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+    使用空片段
+    一个特殊的片段表达式，空片段（~{}），可用于指定无标记。
+    请注意片段（links）的第二个参数如何设置为空片段，因此没有为 <th:block th:replace="${links}" /> 块编写任何内容
+-->
+<head th:replace="fragments/header :: common_header(~{::title},~{})">
+    <title>Awesome - Main</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/themes/smoothness/jquery-ui.css}">
+</head>
+
+<body>
+
+<h1>Yzm</h1>
+
+</body>
+</html>

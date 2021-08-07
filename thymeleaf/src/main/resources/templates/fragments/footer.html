@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>copy</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../css/gtvg.css" th:href="@{/css/gtvg.css}"/>
+</head>
+<body>
+
+<h1>Yzm</h1>
+<h2>片段引用</h2>
+
+<div th:fragment="copy">
+    定义了一个名为的片段copy，我们可以使用th:insert或th:replace属性之一轻松地将其包含在我们的主页中（还有th:include，尽管从 Thymeleaf 3.0 开始不再推荐使用它
+    <p th:text="${id}">
+        片段可以包括任何th:*属性。一旦片段被包含到目标模板（带有th:insert/th:replace属性的模板）中，这些属性将被评估，并且它们将能够引用此目标模板中定义的任何上下文变量。
+    </p>
+</div>
+
+<div id="copy-section">
+    没有引用片段 th:fragment
+    由于标记选择器的强大功能，我们可以包含不使用任何th:fragment属性的片段。它甚至可以是来自完全不了解 Thymeleaf 的不同应用程序的标记代码：
+</div>
+
+<footer th:fragment="copy2">
+    copy2
+    th:insert和th:replace（和th:include）的区别
+</footer>
+
+<!--
+    片段表达式的语法非常简单。共有三种不同的格式：
+    "~{templateName::selector}"包括在名为 templateName 的模板上应用指定的标记选择器所产生的片段。 请注意，它selector可以只是一个片段名称，
+                               因此您可以指定~{templateName::fragmentName}像~{footer :: copy}上面那样简单的内容。
+    "~{templateName}"包括名为 templateName 的完整模板。
+    ~{::selector}"或"~{this::selector}"插入来自同一模板的片段，匹配selector. 如果在表达式出现的模板上没有找到，模板调用（插入）的堆栈会朝最初处理的模板（根）遍历，直到selector在某个级别匹配。
+-->
+
+<!-- 可参数化的片段签名 -->
+<div th:fragment="frag (param1,param2)">
+    frag
+    为了为模板片段创建更类似于函数的机制，定义的片段th:fragment可以指定一组参数
+    <p th:text="${param1} + ' - ' + ${param2}">...</p>
+</div>
+
+<div th:fragment="frag2">
+    frag2
+    没有片段参数的片段局部变量
+    <p th:text="${param1} + ' - ' + ${param2}">...</p>
+</div>
+
+</body>
+</html>

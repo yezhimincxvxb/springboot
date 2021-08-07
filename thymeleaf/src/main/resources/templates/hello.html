@@ -3,20 +3,25 @@
 <head>
     <title>Hello World</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" type="text/css" media="all"
-          href="../../css/gtvg.css" th:href="@{/css/gtvg.css}"/>
+    <link rel="stylesheet" type="text/css" media="all" href="../../css/gtvg.css" th:href="@{/css/gtvg.css}"/>
 </head>
 <body>
 
 <h1>Yzm</h1>
-<h2>Hello in templates</h2>
+<h2>变量表达式 与 消息表达式</h2>
 
-<p th:text="'Hello！' + ${title}">欢迎光临</p>
-<p th:text="#{home.welcome}">welcome</p>
+<p th:text="'Hello！' + ${title}">获取上下文变量</p>
+<p th:text="#{home.welcome}">获取外部化文本消息</p>
 
+<h2>text 与 utext</h2>
 <p th:text="#{home.text}">text 属性会将 HTML 标签进行转义，纯文本、纯字符串</p>
 <p th:utext="#{home.text}">utext 属性保留HTML标签的性质，不进行转义</p>
 
+<h2>消息表达式 传参</h2>
+<p th:utext="#{hello.welcome(${session.user.username})}">消息中添加一个参数（可以指定多个参数，以逗号分隔。）</p>
+<p th:utext="#{${welcomeKey}(${session.user.username})}">消息键本身可以来自一个变量</p>
+
+<h2>函数格式化</h2>
 <p th:text="${#dates.format(date,'dd MMM yyyy')}">dates 格式化</p>
 <p th:text="${#calendars.format(calendar,'yyyy-MM-dd hh:mm:ss')}">calendars 格式化</p>
 

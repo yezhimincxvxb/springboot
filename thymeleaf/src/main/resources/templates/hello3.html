@@ -10,41 +10,16 @@
 
 <h1>Yzm</h1>
 
-<div th:object="${user}">
-    选择表达式：
-    <p>userid: <span th:text="*{userId}">1</span>.</p>
-    <p>username: <span th:text="*{username}">A</span>.</p>
-    <p>password: <span th:text="*{password}">a</span>.</p>
-</div>
+<h2>url表达式</h2>
+<a href="https://www.baidu.com" th:href="@{http://localhost:8080/order/info?id=${id}}">绝对路径</a>
+<a href="https://www.baidu.com" th:href="@{http://localhost:8080/order/info(id=${id})}">绝对路径</a>
+</br>
 
-<div>
-    变量表达式:
-    <p>userid: <span th:text="${user.userId}">2</span>.</p>
-    <p>username: <span th:text="${user.username}">B</span>.</p>
-    <p>password: <span th:text="${user.password}">b</span>.</p>
-</div>
+<a href="https://www.baidu.com" th:href="@{/order/info(id=${id})}">相对路径</a>
+</br>
 
-<div th:object="${user}">
-    选择表达式、变量表达式可以混合使用：
-    <p>userid: <span th:text="*{userId}">3</span>.</p>
-    <p>username: <span th:text="${user.username}">C</span>.</p>
-    <p>password: <span th:text="*{password}">c</span>.</p>
-</div>
-
-<div th:object="${user}">
-    当对象选择就位时，所选对象也将可用于美元表达式作为#object表达式变量：
-    <p>userid: <span th:text="${#object.userId}">4</span>.</p>
-    <p>username: <span th:text="${user.username}">D</span>.</p>
-    <p>password: <span th:text="*{password}">d</span>.</p>
-</div>
-
-<div>
-    如果没有执行对象选择，美元和星号语法是等效的：
-    <p>userid: <span th:text="*{user.userId}">5</span>.</p>
-    <p>username: <span th:text="*{user.username}">E</span>.</p>
-    <p>password: <span th:text="*{user.password}">e</span>.</p>
-</div>
-
+<a href="https://www.baidu.com" th:href="@{/order/info(id=${id},name=${name})}">多参数传递，逗号隔开</a>
+<a href="https://www.baidu.com" th:href="@{/order/info?id=${id}&name=${name}}">多参数传递，逗号隔开</a>
 
 </body>
 </html>

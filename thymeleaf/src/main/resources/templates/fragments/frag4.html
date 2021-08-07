@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+    使用无操作令牌
+    如果我们只想让我们的片段使用其当前标记作为默认值，那么no-op也可以用作片段的参数
+
+    查看 title 参数（common_header 片段的第一个参数）如何设置为no-op（_），这将导致片段的这一部分根本不执行（title= no-operation）
+-->
+<head th:replace="fragments/header :: common_header(_,~{::link})">
+    <title>Awesome - Main</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/themes/smoothness/jquery-ui.css}">
+</head>
+
+<body>
+
+<h1>Yzm</h1>
+
+</body>
+</html>

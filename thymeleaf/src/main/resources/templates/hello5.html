@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Hello World</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../css/gtvg.css" th:href="@{/css/gtvg.css}"/>
+</head>
+<body>
+
+<h1>Yzm</h1>
+
+<h2>条件运算</h2>
+<div th:text="${title ?: ''}">默认</div>
+<div th:text="${user != null ? user.username : ''}">三元运算符</div>
+<div th:text="${user?.username}">调用对象或者方法的点（.）前面，使用问号（?）来判断null</div>
+
+<h2>拼接字符串</h2>
+<span th:text="|博主:${name}联系方式${phone}|"></span>
+
+<h2>内敛文本</h2>
+<div th:inline="text">
+    [[${name}]]
+    <span>[[${age}]]</span>
+</div>
+
+<h2>内敛js</h2>
+<script type="text/javascript" th:inline="javascript">
+    function showInlineJavaScript() {
+        alert("欢迎 " + [[${name}]] + "电话 " +
+            [[${phone}]]);
+    }
+</script>
+<button th:onclick="showInlineJavaScript()">展示内容</button>
+
+</body>
+</html>

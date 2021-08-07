@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Hello World</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" media="all" href="../../css/gtvg.css" th:href="@{/css/gtvg.css}"/>
+</head>
+<body>
+
+<h1>Yzm</h1>
+
+<h2>片段引用</h2>
+<div th:insert="~{fragments/footer :: copy}">
+    th:insert期望一个片段表达式( ~{...})，这是一个导致片段的表达式。但是，在上面的示例中，这是一个非复杂的片段表达式，包围的 ( ~{, }) 是完全可选的
+</div>
+
+<div th:insert="fragments/footer :: copy">此代码等效于上面的</div>
+<div th:insert="~{fragments/footer :: #copy-section}">没有引用片段 th:fragment</div>
+
+<h2>th:insert和th:replace（和th:include）的区别</h2>
+<div th:insert="fragments/footer :: copy2">th:insert 是最简单的：它会简单地插入指定的片段作为其宿主标签的主体。</div>
+<div th:replace="fragments/footer :: copy2">th:replace实际上用指定的片段替换其主机标记。</div>
+<div th:include="fragments/footer :: copy2">th:include与 类似th:insert，但它不插入片段，而是仅插入此片段的内容。</div>
+
+<h2>可参数化的片段签名 </h2>
+<div th:replace="~{fragments/footer::frag (${name},${age})}">...</div>
+<div th:replace="fragments/footer::frag (param2=${age},param1=${name})">选项中的顺序并不重要</div>
+
+<div th:replace="fragments/footer::frag2 (param1=${name},param2=${age})">选项中的顺序并不重要</div>
+<div th:replace="fragments/footer::frag2" th:with="param1=${name},param2=${age}"></div>
+
+</body>
+</html>
