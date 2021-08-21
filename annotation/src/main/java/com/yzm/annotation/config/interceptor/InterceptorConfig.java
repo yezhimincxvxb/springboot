@@ -1,26 +1,22 @@
 package com.yzm.annotation.config.interceptor;
 
-import com.yzm.annotation.config.interceptor.inter.AdminInterceptor;
 import com.yzm.annotation.config.interceptor.inter.UserIdMethodArgumentResolver;
 import com.yzm.annotation.config.interceptor.inter.UserInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 
 import java.util.List;
 
-//@Configuration
+@Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private AdminInterceptor adminInterceptor;
     @Autowired
     private UserInterceptor userInterceptor;
 
     /**
-     * 这个方法是用来配置静态资源的，比如html，js，css，等等
+     * 静态资源配置
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -31,12 +27,12 @@ public class InterceptorConfig implements WebMvcConfigurer {
     }
 
     /**
-     * 注册拦截器
+     * 拦截器配置
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 AdminInterceptor 拦截器
-//        registry.addInterceptor(adminInterceptor)
+//        registry.addInterceptor(new AdminInterceptor())
 //                // 添加拦截路径
 //                .addPathPatterns("/**")
 //                // 添加不拦截路径
@@ -45,7 +41,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
 //                );
         // 注册 UserInterceptor 拦截器
         registry.addInterceptor(userInterceptor)
-                .addPathPatterns("/**").excludePathPatterns("/interceptor/login");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/interceptor/login");
     }
 
     /**
@@ -56,5 +53,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
         resolvers.add(new UserIdMethodArgumentResolver());
     }
 
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
+        configurer.enable("defaultServletName");
+    }
 
 }

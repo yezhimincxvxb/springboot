@@ -17,7 +17,25 @@
     <description>Demo project for Spring Boot</description>
 
     <dependencies>
+        <!-- spring security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
 
+        <!-- jwt -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+
+        <!-- swagger -->
+        <dependency>
+            <groupId>com.spring4all</groupId>
+            <artifactId>swagger-spring-boot-starter</artifactId>
+            <version>1.9.1.RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>

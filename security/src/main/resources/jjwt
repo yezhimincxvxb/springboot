@@ -1,0 +1,29 @@
+### 官网地址
+https://jwt.io/introduction/
+
+### JWT
+Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准（(RFC 7519).该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。
+JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。
+
+### 依赖
+<!-- jwt -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt</artifactId>
+    <version>0.9.1</version>
+</dependency>
+
+### JWT与Session的差异
+相同点：都是存储用户信息；然而，Session是在服务器端的，而JWT是在客户端的。
+不同点：Session方式存储用户信息的最大问题在于要占用大量服务器内存，增加服务器的开销; JWT方式将用户状态分散到了客户端中，可以明显减轻服务端的内存压力
+
+### jwt的组成
+Header: 标题包含了令牌的元数据，并且在最小包含签名和/或加密算法的类型
+Claims: Claims包含您想要签署的任何信息
+JSON Web Signature (JWS): 在header中指定的使用该算法的数字签名和声明
+
+
+
+
+
+

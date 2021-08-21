@@ -3,6 +3,7 @@ package com.yzm.common.entity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 
