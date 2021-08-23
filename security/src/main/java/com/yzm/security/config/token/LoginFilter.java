@@ -50,32 +50,33 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        try {
-            Claims claims = JwtUtils.verifyToken(token);
-            Date iat = claims.getIssuedAt();
-            long currentTime = System.currentTimeMillis();
-            long refreshTime = iat.getTime() + JwtUtils.TOKEN_REFRESH_TIME;
-            long expireTime = claims.getExpiration().getTime();
-
-            //大于刷新时间且在有效期内，进行刷新token
-            if (currentTime > refreshTime && currentTime < expireTime) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("userid", claims.get("userid"));
-                map.put("username", claims.get("username"));
-                map.put("password", claims.get("password"));
-                String autoTokenRe = JwtUtils.generateToken(map);
-                response.setHeader("auth_token", autoTokenRe);
-                log.info("token 令牌 刷新");
-            } else {
-                log.info("token 有效期：" + (claims.getExpiration().getTime() - System.currentTimeMillis()) / 1000 + " 秒");
-            }
-
-            Integer userId = claims.get("userid", Integer.class);
-            request.setAttribute("userid", userId);
-            chain.doFilter(request, response);
-        } catch (Exception e) {
+        Claims claims = JwtUtils.verifyToken(token);
+        if (claims == null) {
             response.getWriter().write("token expired，please login again!");
+            return;
         }
+
+        Date iat = claims.getIssuedAt();
+        long currentTime = System.currentTimeMillis();
+        long refreshTime = iat.getTime() + JwtUtils.TOKEN_REFRESH_TIME;
+        long expireTime = claims.getExpiration().getTime();
+
+        //大于刷新时间且在有效期内，进行刷新token
+        if (currentTime > refreshTime && currentTime < expireTime) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("userid", claims.get("userid"));
+            map.put("username", claims.get("username"));
+            map.put("password", claims.get("password"));
+            String autoTokenRe = JwtUtils.generateToken(map);
+            response.setHeader("auth_token", autoTokenRe);
+            log.info("token 令牌 刷新");
+        } else {
+            log.info("token 有效期：" + (claims.getExpiration().getTime() - System.currentTimeMillis()) / 1000 + " 秒");
+        }
+
+        Integer userId = claims.get("userid", Integer.class);
+        request.setAttribute("userid", userId);
+        chain.doFilter(request, response);
     }
 
     @Override

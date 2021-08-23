@@ -14,7 +14,7 @@ public class HttpResult implements Serializable {
 
     private static final long serialVersionUID = -4661003546224340096L;
 
-    private int code = 200;
+    private int code;
     private String msg;
     private Object data;
 

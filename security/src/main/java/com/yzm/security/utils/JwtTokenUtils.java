@@ -1,9 +1,11 @@
 package com.yzm.security.utils;
 
-import com.yzm.security.entity.JwtUserDetails;
+import com.yzm.security.jwt.JwtUserDetails;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,11 @@ import java.util.UUID;
 public class JwtTokenUtils implements Serializable {
 
     private static final long serialVersionUID = 8527289053988618229L;
+    /**
+     * token前缀
+     */
+    public static final String TOKEN_PREFIX  = "Bearer ";
+    public static final String TOKEN_HEADER = "Authorization";
     /**
      * 用户名称
      */
@@ -40,7 +47,7 @@ public class JwtTokenUtils implements Serializable {
      * 生成令牌
      */
     public static String generateToken(Authentication authentication) {
-        Map<String, Object> claims = new HashMap<>(3);
+        Map<String, Object> claims = new HashMap<>();
         JwtUserDetails principal = (JwtUserDetails) authentication.getPrincipal();
         claims.put(USERNAME, principal.getUsername());
         claims.put(AUTHORITIES, authentication.getAuthorities());
@@ -63,37 +70,41 @@ public class JwtTokenUtils implements Serializable {
      * 验证令牌
      */
     public static Claims verifyToken(String token) {
-        Claims claims = null;
+        Claims claims;
         try {
             claims = Jwts.parser()
                     .setSigningKey(SECRET)
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (Exception e) {
-            //
+        } catch (ExpiredJwtException e) {
+            // token过期是直接抛出异常的，但仍然可以获取到claims对象
+            claims = e.getClaims();
         }
-        return claims;
+
+        if (new Date().before(claims.getExpiration()))
+            return claims;
+        return null;
     }
+
 
     /**
      * 从令牌中获取用户名
      */
     public static String getUsernameFromToken(String token) {
         Claims claims = verifyToken(token);
-        if (claims == null) return null;
-        return claims.getSubject();
+        return claims == null ? null : claims.getSubject();
     }
 
     /**
      * 获取请求token
      */
     public static String getTokenFromRequest(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        String prefix = "Bearer ";
-        if (token == null) {
-            token = request.getHeader("token");
-        } else if (token.startsWith(prefix)) {
-            token = token.substring(prefix.length());
+        String token = request.getHeader(TOKEN_HEADER);
+        if (token == null) token = request.getHeader("token");
+        if (StringUtils.isBlank(token)) return null;
+
+        if (token.startsWith(TOKEN_PREFIX)) {
+            token = token.substring(TOKEN_PREFIX.length());
         }
         return token;
     }

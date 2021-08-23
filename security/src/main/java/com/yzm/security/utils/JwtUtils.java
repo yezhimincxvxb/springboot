@@ -1,6 +1,7 @@
 package com.yzm.security.utils;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -20,7 +21,8 @@ public class JwtUtils {
     /**
      * jwt 加密解密密钥(可自行填写)
      */
-    private static final String JWT_SECRET = "7786df7fc3a34e26a61c034d5ec8245d";
+    private static final String JWT_SECRET = "abcdefg";
+    private static final String JWT_SECRET2 = "7786df7fc3a34e26a61c034d5ec8245d";
 
     /**
      * 生成令牌
@@ -57,10 +59,22 @@ public class JwtUtils {
      * 验证令牌
      */
     public static Claims verifyToken(String token) {
-        return Jwts.parser()
-                //签名秘钥
-                .setSigningKey(generalKey())
-                .parseClaimsJws(token).getBody();
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    //签名秘钥
+                    .setSigningKey(generalKey())
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            // token过期是直接抛出异常的，但仍然可以获取到claims对象
+            claims = e.getClaims();
+        }
+
+        //和当前时间进行对比来判断是否过期
+        if (new Date().before(claims.getExpiration()))
+            return claims;
+        return null;
     }
 
     /**

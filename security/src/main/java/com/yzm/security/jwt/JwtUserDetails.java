@@ -1,4 +1,4 @@
-package com.yzm.security.entity;
+package com.yzm.security.jwt;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;

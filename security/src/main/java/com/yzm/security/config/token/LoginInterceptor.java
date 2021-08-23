@@ -9,7 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,21 +26,24 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         if (StringUtils.isNotBlank(accessToken)) {
-            try {
-                Claims claims = JwtUtils.verifyToken(accessToken);
+            Claims claims = JwtUtils.verifyToken(accessToken);
+            if (claims == null) {
+                response.getWriter().write("old accessToken expired ! Please replace it with a new one in time");
+                log.info("token 令牌过期，尝试刷新");
+            } else {
                 Integer userId = claims.get("userid", Integer.class);
                 request.setAttribute("userid", userId);
                 log.info("accessToken 剩余有效时间：" + (claims.getExpiration().getTime() - System.currentTimeMillis() / 1000) + " 秒");
                 return true;
-            } catch (Exception e) {
-                response.getWriter().write("old accessToken expired ! Please replace it with a new one in time");
-                log.info("token 令牌过期，尝试刷新");
             }
         }
 
         if (StringUtils.isNotBlank(refreshToken)) {
-            try {
-                Claims claims = JwtUtils.verifyToken(refreshToken);
+            Claims claims = JwtUtils.verifyToken(refreshToken);
+            if (claims == null) {
+                response.getWriter().write("token expired, please login again!");
+                log.info("刷新 token 令牌过期，请重新登录");
+            } else {
                 Map<String, Object> map = new HashMap<>();
                 map.put("userid", claims.get("userid"));
                 map.put("username", claims.get("username"));
@@ -56,14 +58,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 
                 log.info("refreshToken 剩余有效时间：" + (claims.getExpiration().getTime() - System.currentTimeMillis() / 1000) + " 秒");
                 return true;
-            } catch (Exception e2) {
-                log.info("刷新 token 令牌过期，请重新登录");
-                response.getWriter().write("token expired, please login again!");
             }
         }
 
         return false;
-
     }
 
     @Override

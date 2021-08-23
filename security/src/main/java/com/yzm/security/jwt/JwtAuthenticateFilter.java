@@ -1,10 +1,10 @@
-package com.yzm.security.filter;
+package com.yzm.security.jwt;
 
-import com.yzm.security.entity.JwtAuthenticationToken;
 import com.yzm.security.utils.HttpUtils;
 import com.yzm.security.utils.JwtTokenUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -16,15 +16,11 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
 /**
  * 登录认证过滤器
- *
+ * <p>
  * 作用：拦截“/login”登录请求，处理表单提交的登录认证
  */
 public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter {
@@ -38,6 +34,7 @@ public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
     @Override
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
         String username = obtainUsername(request);
         String password = obtainPassword(request);
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
@@ -45,7 +42,7 @@ public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
         }
 
         // 将请求中的认证信息包括username,password等封装成UsernamePasswordAuthenticationToken
-        JwtAuthenticationToken authToken = new JwtAuthenticationToken(username, password);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
         this.setDetails(request, authToken);
 
         return this.getAuthenticationManager().authenticate(authToken);
@@ -69,7 +66,7 @@ public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
         }
 
         // 生成并返回token给客户端，后续访问携带此token
-        HttpUtils.write(response, JwtTokenUtils.generateToken(authResult));
+        HttpUtils.successWrite(response, JwtTokenUtils.generateToken(authResult));
 
         //重定向登录成功地址
         //getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
@@ -78,41 +75,7 @@ public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
     // 这是验证失败时候调用的方法
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        response.getWriter().write("authentication failed, reason: " + failed.getMessage());
-    }
-
-    /**
-     * 从请求流获取Body
-     */
-    public String getBody(HttpServletRequest request) {
-        StringBuilder sb = new StringBuilder();
-        InputStream inputStream = null;
-        BufferedReader reader = null;
-        try {
-            inputStream = request.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return sb.toString();
+        HttpUtils.errorWrite(response, "authentication failed, reason: " + failed.getMessage());
+        //getFailureHandler().onAuthenticationFailure(request, response, failed);
     }
 }

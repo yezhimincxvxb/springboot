@@ -24,11 +24,20 @@ public class HttpUtils {
     /**
      * 输出信息到浏览器
      */
-    public static void write(HttpServletResponse response, Object data) throws IOException {
+    public static void successWrite(HttpServletResponse response, Object data) throws IOException {
+        response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         HttpResult result = HttpResult.ok(data);
-        String json = JSONObject.toJSONString(result);
-        response.getWriter().print(json);
+        response.getWriter().print(JSONObject.toJSONString(result));
+        response.getWriter().flush();
+        response.getWriter().close();
+    }
+
+    public static void errorWrite(HttpServletResponse response, String msg) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        HttpResult result = HttpResult.error(msg);
+        response.getWriter().print(JSONObject.toJSONString(result));
         response.getWriter().flush();
         response.getWriter().close();
     }

@@ -1,10 +1,10 @@
 package com.yzm.security.service.impl;
 
-import com.yzm.security.entity.JwtGrantedAuthority;
+import com.yzm.security.jwt.JwtUserDetails;
 import com.yzm.security.entity.User;
-import com.yzm.security.entity.JwtUserDetails;
 import com.yzm.security.service.UserService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,8 +34,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         // 用户权限列表，根据用户拥有的权限标识与如 @PreAuthorize("hasAuthority('delete')") 标注的接口对比，决定是否可以调用接口
-        List<JwtGrantedAuthority> grantedAuthorities = Arrays.stream(user.getPermissions().split(","))
-                .map(JwtGrantedAuthority::new)
+        List<SimpleGrantedAuthority> grantedAuthorities = Arrays.stream(user.getPermissions().split(","))
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
         return new JwtUserDetails(username, user.getPassword(), grantedAuthorities);
     }
