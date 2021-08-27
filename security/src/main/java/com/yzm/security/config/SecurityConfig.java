@@ -63,18 +63,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //配置资源权限规则
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http
-//                // 禁用 csrf, 由于使用的是JWT，我们这里不需要   csrf
-//                .cors().and()
-//                .csrf().disable()
-//                //基于Token，因为不需要Session;设置 session 状态 STATELESS 无状态
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http
+                // 禁用 csrf, 由于使用的是JWT，我们这里不需要   csrf
+                .cors().and()
+                .csrf().disable()
+                //基于Token，因为不需要Session;设置 session 状态 STATELESS 无状态
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        ;
 
         http
                 //表单登录：使用默认的表单登录页面和登录端点/login进行登录
                 .formLogin()
                 .loginPage("/user/login") //指定登录页的路径
-                .loginProcessingUrl("/login") //指定自定义form表单请求的路径
+                .loginProcessingUrl("/auth/login") //指定自定义form表单请求的路径
                 .failureForwardUrl("/loginFail")//登录失败跳转
                 .successForwardUrl("/toHome") //登录成功跳转
                 .permitAll()

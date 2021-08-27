@@ -5,39 +5,17 @@
     <title>标准登录页</title>
 </head>
 <body>
-<h3>表单登录</h3>
-<form action="/login" method="post">
-    <table>
-        <tr>
-            <td>用户:</td>
-            <td>
-                <label>
-                    <input type="text" name="username" placeholder="username">
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>密码:</td>
-            <td>
-                <label>
-                    <input type="password" name="password" placeholder="password">
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label>
-                    <input type="checkbox" name="remember-me" value="true"/>
-                    记住我
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <button type="submit">登录</button>
-            </td>
-        </tr>
-    </table>
+<form method="post" action="/auth/login">
+    <p>
+        <label for="username" >Username</label>
+        <input type="text" id="username" name="username" placeholder="Username">
+    </p>
+    <p>
+        <label for="password" >Password</label>
+        <input type="password" id="password" name="password" placeholder="Password">
+    </p>
+    <p><input type="checkbox" name="remember-me"> Remember me on this computer.</p>
+    <button type="submit">Sign in</button>
 </form>
 </body>
 </html>

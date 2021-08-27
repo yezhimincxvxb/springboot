@@ -35,20 +35,20 @@ public class LoginController {
     }
 
     /**
+     * 跳转到home.html页面（不需要登录）
+     */
+    @RequestMapping("/toHome")
+    public String toHome() {
+        return "home";
+    }
+
+    /**
      * 用户认证成功之后，可以通过@AuthenticationPrincipal注解来获取认证用户信息
      */
     @GetMapping("/getUserDetails")
     @ResponseBody
     public Object getUserDetails(@AuthenticationPrincipal UserDetails userDetails) {
         return userDetails;
-    }
-
-    /**
-     * 跳转到home.html页面（不需要登录）
-     */
-    @RequestMapping("/toHome")
-    public String toHome() {
-        return "home";
     }
 
     /**
