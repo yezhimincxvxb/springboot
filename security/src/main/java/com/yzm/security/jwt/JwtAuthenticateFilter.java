@@ -11,9 +11,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,6 +35,13 @@ public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
     }
 
     @Override
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
+        // POST 请求 /login 登录时拦截， 由此方法触发执行登录认证流程，可以在此覆写整个登录认证逻辑
+        super.doFilter(req, res, chain);
+    }
+
+    @Override
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
@@ -44,7 +54,6 @@ public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
         // 将请求中的认证信息包括username,password等封装成UsernamePasswordAuthenticationToken
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
         this.setDetails(request, authToken);
-
         return this.getAuthenticationManager().authenticate(authToken);
     }
 
@@ -75,6 +84,8 @@ public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
     // 这是验证失败时候调用的方法
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        SecurityContextHolder.clearContext();
+        getRememberMeServices().loginFail(request, response);
         HttpUtils.errorWrite(response, "authentication failed, reason: " + failed.getMessage());
         //getFailureHandler().onAuthenticationFailure(request, response, failed);
     }

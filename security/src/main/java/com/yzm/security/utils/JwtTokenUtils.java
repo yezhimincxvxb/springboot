@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
@@ -24,7 +25,7 @@ public class JwtTokenUtils implements Serializable {
     /**
      * token前缀
      */
-    public static final String TOKEN_PREFIX  = "Bearer ";
+    public static final String TOKEN_PREFIX  = "Basic ";
     public static final String TOKEN_HEADER = "Authorization";
     /**
      * 用户名称
@@ -48,7 +49,7 @@ public class JwtTokenUtils implements Serializable {
      */
     public static String generateToken(Authentication authentication) {
         Map<String, Object> claims = new HashMap<>();
-        JwtUserDetails principal = (JwtUserDetails) authentication.getPrincipal();
+        UserDetails principal = (UserDetails) authentication.getPrincipal();
         claims.put(USERNAME, principal.getUsername());
         claims.put(AUTHORITIES, authentication.getAuthorities());
         return generateToken(claims);

@@ -33,6 +33,4 @@ public class User implements Serializable {
     private String username;
     @TableField("password")
     private String password;
-
-    private String permissions;
 }

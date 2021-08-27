@@ -2,6 +2,8 @@ package com.yzm.security.jwt;
 
 import com.yzm.security.service.UserService;
 import com.yzm.security.utils.JwtTokenUtils;
+import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,6 +11,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -19,13 +22,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * 权限验证过滤器
  */
+@Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Autowired
@@ -41,25 +45,35 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // 检查登录状态
-        String token = JwtTokenUtils.getTokenFromRequest(request);
-        if (StringUtils.isNotBlank(token)) {
-            String tokenUsername = JwtTokenUtils.getUsernameFromToken(token);
-            if (tokenUsername != null) {
-                if (authenticationIsRequired(tokenUsername)) {
-                    Set<String> permissions = userService.findPermissions(tokenUsername);
-                    List<SimpleGrantedAuthority> grantedAuthorities = permissions.stream()
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
+        try {
+            String token = JwtTokenUtils.getTokenFromRequest(request);
+            if (StringUtils.isNotBlank(token)) {
+                Claims claims = JwtTokenUtils.verifyToken(token);
+                if (claims != null) {
+                    String tokenUsername = claims.getSubject();
+                    if (authenticationIsRequired(tokenUsername)) {
+                        Collection<GrantedAuthority> grantedAuthorities = (Collection<GrantedAuthority>) claims.get(JwtTokenUtils.AUTHORITIES);
+                        if (grantedAuthorities == null) {
+                            Set<String> permissions = userService.findPermissions(tokenUsername);
+                            grantedAuthorities = permissions.stream()
+                                    .map(SimpleGrantedAuthority::new)
+                                    .collect(Collectors.toList());
+                        }
 
-                    UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(tokenUsername, null, grantedAuthorities);
-                    authRequest.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    Authentication authenticate = this.authenticationManager.authenticate(authRequest);
+                        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(tokenUsername, null, grantedAuthorities);
+                        authRequest.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        Authentication authenticate = this.authenticationManager.authenticate(authRequest);
 
-                    // 认证成功存储认证信息到上下文
-                    SecurityContextHolder.getContext().setAuthentication(authenticate);
+                        // 认证成功存储认证信息到上下文
+                        SecurityContextHolder.getContext().setAuthentication(authenticate);
+                    }
                 }
+            } else {
+                log.info("token or authorization not included in request header");
             }
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            return;
         }
         chain.doFilter(request, response);
     }
