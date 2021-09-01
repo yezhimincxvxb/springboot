@@ -1,7 +1,7 @@
-package com.yzm.security.config;
+package com.example.security_2.config;
 
-import com.yzm.security.jwt.JwtAuthenticateFilter;
-import com.yzm.security.jwt.JwtAuthorizationFilter;
+import com.example.security_2.jwt.JwtAuthenticateFilter;
+import com.example.security_2.jwt.JwtAuthorizationFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

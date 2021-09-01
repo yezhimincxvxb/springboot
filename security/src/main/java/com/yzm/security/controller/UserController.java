@@ -21,18 +21,18 @@ import java.security.Principal;
 @Api(value = "用户信息", tags = {"用户信息API"})
 public class UserController {
 
-    @ApiOperation(value = "findAll", notes = "findAll")
-    @GetMapping(value="/findAll")
+    @ApiOperation(value = "select", notes = "select")
+    @GetMapping(value="/select")
     @PreAuthorize("hasAuthority('select')")
     public HttpResult findAll() {
-        return HttpResult.ok("the findAll service is called success.");
+        return HttpResult.ok("the select service is called success.");
     }
 
     @ApiOperation(value = "update", notes = "update")
     @GetMapping(value="/update")
     @PreAuthorize("hasAuthority('update')")
     public HttpResult update() {
-        return HttpResult.ok("the edit service is called success.");
+        return HttpResult.ok("the update service is called success.");
     }
 
     @ApiOperation(value = "delete", notes = "delete")
@@ -46,7 +46,7 @@ public class UserController {
     @GetMapping(value="/save")
     @PreAuthorize("hasAuthority('save')")
     public HttpResult save() {
-        return HttpResult.ok("the delete service is called success.");
+        return HttpResult.ok("the save service is called success.");
     }
 
 }
