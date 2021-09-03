@@ -1,10 +1,12 @@
-package com.example.security_2.jwt;
+package com.yzm.security_2.service.impl;
 
-import com.example.security_2.constant.SysConstant;
+import com.yzm.security_2.constant.SysConstant;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,10 +22,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        String password = "123456";
+        String password = new BCryptPasswordEncoder().encode("123456");
         List<String> permissions = new ArrayList<>();
         permissions.add(SysConstant.USER);
         if (SysConstant.SUPER_ADMIN.equalsIgnoreCase(username)) {
@@ -36,6 +37,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         List<SimpleGrantedAuthority> grantedAuthorities = permissions.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-        return new JwtUserDetails(username, password, grantedAuthorities);
+        return new User(username, password, grantedAuthorities);
     }
 }

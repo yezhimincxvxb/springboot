@@ -1,5 +1,6 @@
-package com.example.security_2.controller;
+package com.yzm.security_2.controller;
 
+import com.yzm.security_2.constant.SysConstant;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,22 +18,19 @@ public class LoginController {
     /**
      * 跳转到home.html页面（不需要登录）
      */
-    @GetMapping("/user/login")
-    public String authLogin() {
+    @GetMapping(SysConstant.LOGIN_PAGE_URL)
+    public String login() {
         return "login";
     }
 
-    @RequestMapping("/loginFail")
-    public String loginFail() {
-        return "loginFail";
+    @RequestMapping(SysConstant.SUCCESS_URL)
+    public String success() {
+        return "success";
     }
 
-    /**
-     * 跳转到home.html页面（不需要登录）
-     */
-    @RequestMapping("/toHome")
-    public String toHome() {
-        return "home";
+    @RequestMapping(SysConstant.FAIL_URL)
+    public String fail() {
+        return "fail";
     }
 
     /**
@@ -45,22 +43,29 @@ public class LoginController {
     }
 
     /**
-     * 跳转到admin.html页面（需要登录，且需要ROLE_ADMIN角色）
+     * 不需要登录
      */
-    @GetMapping("/toAdmin")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public String toAdmin() {
-        return "admin";
+    @RequestMapping("/toHome")
+    public String toHome() {
+        return "home";
     }
 
     /**
-     * 跳转到user.html页面（需要登录，但不需要角色）
-     * 注意：虽然WebSecurityConfig中配置了/toUser不需要登录，但是这里配置的权限更小，因此，/toUser以这里的配置为准
+     * 需要登录，但不需要角色
      */
     @GetMapping("/toUser")
     @PreAuthorize("isAuthenticated()")
     public String toUser() {
         return "user";
+    }
+
+    /**
+     * 需要登录，需要角色
+     */
+    @GetMapping("/toAdmin")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String toAdmin() {
+        return "admin";
     }
 
 }

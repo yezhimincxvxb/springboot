@@ -3,6 +3,7 @@ package com.yzm.security.jwt;
 import com.yzm.security.utils.HttpUtils;
 import com.yzm.security.utils.JwtTokenUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
@@ -31,7 +33,7 @@ public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
     public JwtAuthenticateFilter(AuthenticationManager authManager) {
         setAuthenticationManager(authManager);
         // 可以修改默认登录地址
-        super.setFilterProcessesUrl("/auth/login");
+        //super.setFilterProcessesUrl("/auth/login");
     }
 
     @Override

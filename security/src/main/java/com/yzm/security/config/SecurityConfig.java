@@ -1,6 +1,7 @@
 package com.yzm.security.config;
 
 import com.yzm.security.jwt.JwtAuthenticateFilter;
+import com.yzm.security.jwt.JwtAuthenticateProvider;
 import com.yzm.security.jwt.JwtAuthorizationFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,8 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.authenticationProvider(new JwtAuthenticateProvider(userDetailsService, passwordEncoder()));
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.authenticationProvider(new JwtAuthenticateProvider(userDetailsService, passwordEncoder()));
     }
 
     //配置资源权限规则
@@ -71,10 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 //表单登录：使用默认的表单登录页面和登录端点/login进行登录
                 .formLogin()
-                .loginPage("/user/login") //指定登录页的路径，默认/login
-                .loginProcessingUrl("/auth/login") //指定自定义form表单请求的路径
-                .failureForwardUrl("/loginFail")//登录失败跳转
-                .successForwardUrl("/toHome") //登录成功跳转
+                .loginProcessingUrl("/login")
                 .permitAll()
                 .and()
                 //退出登录：使用默认的退出登录端点/logout退出登录
@@ -99,9 +96,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new JwtAuthenticateFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 // 访问鉴权过滤器
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-                // 异常处理
-//                .exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-//                .and()
                 // 退出登录处理器，因为是前后端分离，防止内置的登录处理器在后台进行跳转
                 .logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
     }
