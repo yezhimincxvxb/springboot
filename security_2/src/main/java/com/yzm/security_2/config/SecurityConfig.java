@@ -2,7 +2,6 @@ package com.yzm.security_2.config;
 
 import com.yzm.security_2.constant.SysConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter;
 
 import javax.sql.DataSource;
 
@@ -30,10 +27,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final DataSource dataSource;
+    private final MyLoginSuccessHandler loginSuccessHandler;
+    private final MyLoginFailureHandler failureHandler;
 
-    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService, DataSource dataSource) {
+    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService, DataSource dataSource, MyLoginSuccessHandler loginSuccessHandler, MyLoginFailureHandler failureHandler) {
         this.userDetailsService = userDetailsService;
         this.dataSource = dataSource;
+        this.loginSuccessHandler = loginSuccessHandler;
+        this.failureHandler = failureHandler;
     }
 
     /**
@@ -81,8 +82,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage(SysConstant.LOGIN_PAGE_URL) //指定登录页的路径，默认/login
                 .loginProcessingUrl(SysConstant.FORM_LOGIN_URL) //指定自定义form表单请求的路径(必须跟login.html中的form action=“url”一致)
-                .successForwardUrl(SysConstant.SUCCESS_URL) //登录成功跳转
-                .failureForwardUrl(SysConstant.FAIL_URL)//登录失败跳转
+                //.successForwardUrl(SysConstant.SUCCESS_URL) //登录成功跳转
+                //.failureForwardUrl(SysConstant.FAIL_URL)//登录失败跳转
+                .successHandler(loginSuccessHandler) //登录成功后的处理
+                .failureHandler(failureHandler) //登录失败后的处理
                 .permitAll()
                 .and()
 

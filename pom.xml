@@ -29,6 +29,7 @@
         <module>thymeleaf</module>
         <module>security</module>
         <module>security_2</module>
+        <module>shiro</module>
     </modules>
 
     <properties>

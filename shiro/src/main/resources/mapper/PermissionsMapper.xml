@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yzm.shiro.mapper.PermissionsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yzm.shiro.entity.Permissions">
+        <id column="p_id" property="pId"/>
+        <result column="p_name" property="pName"/>
+        <result column="p_desc" property="pDesc"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        p_id
+        , p_name, p_desc
+    </sql>
+
+    <select id="getPermissions" resultMap="BaseResultMap">
+        select p.p_id, p.p_name, p.p_desc
+        from `permissions` p
+        left join role_perm rp on p.p_id = rp.p_id
+        where rp.r_id in
+        <foreach collection="roleIds" item="roleId" separator="," open="(" close=")">
+            #{roleId}
+        </foreach>
+    </select>
+
+</mapper>
