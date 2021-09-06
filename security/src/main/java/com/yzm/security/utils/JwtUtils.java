@@ -34,9 +34,13 @@ public class JwtUtils {
     public static String generateToken(Map<String, Object> claims, Long expiredTime) {
         if (expiredTime < TOKEN_EXPIRED_TIME) expiredTime = TOKEN_EXPIRED_TIME;
 
+//        Map<String, Object> headMap = new HashMap<>();
+//        headMap.put("alg", SignatureAlgorithm.HS256.getValue());
+//        headMap.put("typ", "JWT");
+
         //下面就是在为payload添加各种标准声明和私有声明了
         return Jwts.builder()
-                //.setHeader()
+                //.setHeader(headMap)
                 //JWT的唯一标识，根据业务需要，这个可以设置为一个不重复的值，主要用来作为一次性token,从而回避重放攻击
                 .setId(UUID.randomUUID().toString())
                 //.setIssuer("该JWT的签发者，是否使用是可选的")
@@ -82,7 +86,8 @@ public class JwtUtils {
      */
     public static SecretKey generalKey() {
         byte[] encodedKey = Base64.decodeBase64(JWT_SECRET);
-        return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+        //return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+        return new SecretKeySpec(encodedKey, SignatureAlgorithm.HS256.getJcaName());
     }
 
     public static void main(String[] args) {
