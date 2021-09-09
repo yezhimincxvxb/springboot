@@ -64,7 +64,7 @@ http://localhost:8080/oauth/token?username=yzm&password=123456&grant_type=passwo
 
 ### 授权码模式
 访问：
-    http://localhost:8080/oauth/authorize?client_id=aiqiyi&response_type=code
+    http://localhost:8080/oauth/authorize?client_id=code&response_type=code
 配置了重定向：.redirectUris("http://localhost:8080/qq/code/redirect")
 所以会请求对应的 http://localhost:8080/qq/code/redirect 接口
 第一次需要登录
@@ -78,6 +78,7 @@ http://localhost:8080/oauth/token?username=yzm&password=123456&grant_type=passwo
 }
 
 ### 刷新token
+GET: http://localhost:8080/oauth/token?grant_type=refresh_token&refresh_token=86f90c50-1ee2-4794-9e3f-47809fddfa70&client_id=code&client_secret=123456
 POST http://localhost:8080/oauth/token
 
 

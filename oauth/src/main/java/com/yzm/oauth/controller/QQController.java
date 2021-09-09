@@ -29,7 +29,7 @@ public class QQController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> params= new LinkedMultiValueMap<>();
-        params.add("client_id","aiqiyi");
+        params.add("client_id","code");
         params.add("client_secret","123456");
         params.add("grant_type","authorization_code");
         params.add("code",code);
