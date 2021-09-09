@@ -1,0 +1,90 @@
+### 密码模式
+1.获取token：
+请求：
+    http://localhost:8080/oauth/token?username=admin&password=123456&grant_type=password&scope=select&client_id=client_2&client_secret=123456
+响应：
+{
+    "access_token": "a020f9ba-60b5-459e-b06d-bd9d191127b4",
+    "token_type": "bearer",
+    "refresh_token": "0034eeaf-c899-4883-aefb-9cc5871e8673",
+    "expires_in": 43199,
+    "scope": "select"
+}
+2.不带token
+访问：
+    http://localhost:8080/order/1
+响应：
+{
+    "error": "unauthorized",
+    "error_description": "Full authentication is required to access this resource"
+}
+3.带token
+访问：
+    http://localhost:8080/order/1?access_token=a020f9ba-60b5-459e-b06d-bd9d191127b4
+响应：
+    order id : 1
+4.不带token，但可以匿名
+访问：
+    http://localhost:8080/user/info/1
+响应：
+    user id : 1
+5.需要角色才能访问
+访问：
+    http://localhost:8080/product/1?access_token=a020f9ba-60b5-459e-b06d-bd9d191127b4
+响应：
+    product id : 1
+改换yzm用户
+http://localhost:8080/oauth/token?username=yzm&password=123456&grant_type=password&scope=select&client_id=client_2&client_secret=123456
+{
+    "access_token": "3d8af29e-9424-49df-bd04-54ea305a52c9",
+    "token_type": "bearer",
+    "refresh_token": "9ca6d31f-06bb-4904-be21-cdd68499852c",
+    "expires_in": 43199,
+    "scope": "select"
+}
+再去访问：(access_token已换)
+    http://localhost:8080/product/1?access_token=3d8af29e-9424-49df-bd04-54ea305a52c9
+响应：
+{
+    "error": "access_denied",
+    "error_description": "Access is denied"
+}
+
+### 客户端模式
+访问：
+    http://localhost:8080/oauth/token?grant_type=client_credentials&scope=select
+    &client_id=client_1&client_secret=123456
+响应：
+{
+    "access_token": "042568e4-d050-44d4-9ba8-e95a9e017727",
+    "token_type": "bearer",
+    "expires_in": 43200,
+    "scope": "select"
+}
+
+### 授权码模式
+访问：
+    http://localhost:8080/oauth/authorize?client_id=aiqiyi&response_type=code
+配置了重定向：.redirectUris("http://localhost:8080/qq/code/redirect")
+所以会请求对应的 http://localhost:8080/qq/code/redirect 接口
+第一次需要登录
+登录后最终响应
+{
+    "access_token":"e69d8c68-fe03-4bbe-a914-d1c008edc0eb",
+    "token_type":"bearer",
+    "refresh_token":"89026ed8-28ad-42db-a87c-7eac189a2237",
+    "expires_in":43199,
+    "scope":"get_user_info get_fans_list"
+}
+
+### 刷新token
+POST http://localhost:8080/oauth/token
+
+
+
+
+
+
+
+
+
