@@ -1,5 +1,7 @@
 package com.yzm.oauth.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,15 +17,32 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.util.Assert;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class OAuth2ServerConfig2 {
 
     private static final String QQ_RESOURCE_ID = "qq";
+    public static final String AUTH_CODE = "authCode";
+    public static final String AUTH_CODE2 = "client_code";
+    public static final String PASSWORD = "123456";
+    public static final String CODE_REDIRECT = "code/redirect";
+    public static final String CODE_REDIRECT2 = "code/redirect2";
+    public static final String EASY_REDIRECT = "easy/redirect";
+    //accessToken 过期
+    public static final int accessTokenValiditySecond = 60 * 60 * 2; //2小时
+    public static final int refreshTokenValiditySecond = 60 * 60 * 24 * 7; // 7 天
 
     /**
      * 授权服务器
@@ -42,78 +61,104 @@ public class OAuth2ServerConfig2 {
             this.userDetailsService = userDetailsService;
         }
 
+        @Autowired
+        private DataSource dataSource;
+
+//        @Autowired
+//        private RedisConnectionFactory redisConnectionFactory;
+
         @Bean
-        public ApprovalStore approvalStore() {
-            TokenApprovalStore store = new TokenApprovalStore();
-            store.setTokenStore(tokenStore());
-            return store;
+        public JwtAccessTokenConverter jwtAccessTokenConverter() {
+            JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+            jwtAccessTokenConverter.setSigningKey("jwtSigningKey");
+            return jwtAccessTokenConverter;
         }
 
+        @Bean
+        public ClientDetailsService clientDetails() {
+            return new JdbcClientDetailsService(dataSource);
+        }
+
+        /**
+         * token存储方式
+         */
         @Bean
         public TokenStore tokenStore() {
-            return new InMemoryTokenStore();
-            // 需要使用 redis 的话，放开这里
-//            return new RedisTokenStore(redisConnectionFactory);
+            // 默认内存
+            // return new InMemoryTokenStore();
+            // 数据库
+             return new JdbcTokenStore(dataSource);
+            // redis
+            // return new RedisTokenStore(redisConnectionFactory);
+            // jwt
+            // return new JwtTokenStore(jwtAccessTokenConverter());
         }
 
-        //accessToken 过期
-        private static final int accessTokenValiditySecond = 60 * 60 * 2; //2小时
-        private static final int refreshTokenValiditySecond = 60 * 60 * 24 * 7; // 7 天
-
-
+        /**
+         * a configurer that defines the client details service.
+         * Client details can be initialized, or you can just refer to an existing store.
+         */
         @Override
         public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
             clients.inMemory()
                     /*
-                     * 授权码模式
+                        授权码模式
                      */
-                    .withClient("code")
-                    .secret(passwordEncoder.encode("123456"))
+                    .withClient(AUTH_CODE)
+                    .secret(passwordEncoder.encode(PASSWORD))
                     .resourceIds(QQ_RESOURCE_ID)
                     .authorizedGrantTypes("authorization_code", "refresh_token")
                     .authorities("ROLE_CLIENT")
                     .scopes("get_user_info", "get_fans_list")
-                    .redirectUris("http://localhost:8080/qq/code/redirect")
+                    .redirectUris("http://localhost:8080/qq/" + CODE_REDIRECT)
                     .autoApprove(true)
                     .autoApprove("get_user_info")
                     .accessTokenValiditySeconds(accessTokenValiditySecond)
                     .refreshTokenValiditySeconds(refreshTokenValiditySecond)
                     /*
-                     * 简化模式
+                        简化模式
                      */
                     .and()
                     .withClient("easy")
-                    .secret(passwordEncoder.encode("123456"))
+                    .secret(passwordEncoder.encode(PASSWORD))
                     .resourceIds(QQ_RESOURCE_ID)
                     .authorizedGrantTypes("implicit")
                     .authorities("ROLE_CLIENT")
                     .scopes("get_user_info")
-                    .redirectUris("http://localhost:8080/qq/easy/redirect")
+                    .redirectUris("http://localhost:8080/qq/" + EASY_REDIRECT)
             ;
-        }
-
-        @Override
-        public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-            endpoints
-                    .tokenStore(new InMemoryTokenStore())
-                    .approvalStore(approvalStore())
-                    //允许 GET、POST 请求获取 token，即访问端点：oauth/token
-                    .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
-                    //刷新token
-                    .userDetailsService(userDetailsService)
-                    .authenticationManager(authenticationManager);
+            // 读取数据库字段配置客户端 (跟内存二选一)
+            // clients.withClientDetails(clientDetails());
         }
 
         /**
-         * 权限控制
+         * defines the security constraints on the token endpoint.
          */
         @Override
         public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
             security
+//                    .tokenKeyAccess("isAnonymous() || hasAuthority('ROLE_TRUSTED_CLIENT')")
+//                    .checkTokenAccess("hasAuthority('ROLE_TRUSTED_CLIENT')")
                     .tokenKeyAccess("permitAll()")
-                    .checkTokenAccess("isAuthenticated()")
-//                    .realm(QQ_RESOURCE_ID)
+                    .checkTokenAccess("permitAll()")
+                    .realm(QQ_RESOURCE_ID)
                     .allowFormAuthenticationForClients();
+        }
+
+        /**
+         * defines the authorization and token endpoints and the token services.
+         */
+        @Override
+        public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+            endpoints
+                    .tokenStore(tokenStore())
+                    // 使用jwt时，开启
+                    // .accessTokenConverter(jwtAccessTokenConverter())
+                    // 允许 GET、POST 请求获取 token，即访问端点：oauth/token
+                    .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
+                    // 刷新令牌授权将包含对用户详细信息的检查，以确保该帐户仍然处于活动状态
+                    .userDetailsService(userDetailsService)
+                    .authenticationManager(authenticationManager);
         }
 
     }
@@ -139,10 +184,9 @@ public class OAuth2ServerConfig2 {
                     .requestMatchers().antMatchers("/qq/**")
                     .and()
                     .authorizeRequests()
-                    // 放行重定向接口
-                    .antMatchers("/qq/code/redirect").permitAll()
-                    .antMatchers("/qq/easy/redirect").permitAll()
+                    .antMatchers("/qq/code/redirect*", "/qq/easy/redirect").permitAll() // 放行重定向接口
                     .antMatchers("/qq/info/**").access("#oauth2.hasScope('get_user_info')")
+                    .antMatchers("/qq/info2/**").access("#oauth2.hasScope('get_user_info') and hasAnyRole('ROLE_ADMIN')")
                     .anyRequest().authenticated()
             ;
         }

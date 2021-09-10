@@ -64,11 +64,13 @@ http://localhost:8080/oauth/token?username=yzm&password=123456&grant_type=passwo
 
 ### 授权码模式
 访问：
-    http://localhost:8080/oauth/authorize?client_id=code&response_type=code
+    http://localhost:8080/oauth/authorize?client_id=authCode&response_type=code
 配置了重定向：.redirectUris("http://localhost:8080/qq/code/redirect")
 所以会请求对应的 http://localhost:8080/qq/code/redirect 接口
-第一次需要登录
-登录后最终响应
+需要登录
+qq/code/redirect 接口中获取code并封装请求参数再去请求了
+http://localhost:8080/oauth/token?client_id=authCode&client_secret=123456&grant_type=authorization_code&code=spSQJC
+最终响应
 {
     "access_token":"e69d8c68-fe03-4bbe-a914-d1c008edc0eb",
     "token_type":"bearer",
@@ -77,9 +79,14 @@ http://localhost:8080/oauth/token?username=yzm&password=123456&grant_type=passwo
     "scope":"get_user_info get_fans_list"
 }
 
+### 校验token
+http://localhost:8080/oauth/check_token?token=5b39a367-43a2-4b36-addc-b0680ba38da2
+
 ### 刷新token
-GET: http://localhost:8080/oauth/token?grant_type=refresh_token&refresh_token=86f90c50-1ee2-4794-9e3f-47809fddfa70&client_id=code&client_secret=123456
-POST http://localhost:8080/oauth/token
+GET:
+    http://localhost:8080/oauth/token?client_id=authCode&client_secret=123456&grant_type=refresh_token&refresh_token=86f90c50-1ee2-4794-9e3f-47809fddfa70
+POST
+    POST刷新token.png
 
 
 

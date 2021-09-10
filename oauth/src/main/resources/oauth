@@ -45,7 +45,7 @@ A步骤中，客户端申请认证的URI，包含以下参数：
     scope：表示申请的权限范围，可选项
     state：表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。
 eg:
-    http://localhost:8080/oauth/authorize?client_id=aiqiyi&response_type=code
+    http://localhost:8080/oauth/authorize?client_id=authCode&response_type=code
 
 C步骤中，服务器回应客户端的URI，包含以下参数：
     code：表示授权码，必选项。该码的有效期应该很短，通常设为10分钟，客户端只能使用该码一次，否则会被授权服务器拒绝。该码与客户端ID和重定向URI，是一一对应关系。
@@ -59,7 +59,7 @@ D步骤中，客户端向认证服务器申请令牌的HTTP请求，包含以下
     redirect_uri：表示重定向URI，必选项，且必须与A步骤中的该参数值保持一致。
     client_id：表示客户端ID，必选项。
 eg:
-    http://localhost:8080/oauth/token?client_id=aiqiyi&client_secret=123456&grant_type=authorization_code&code=spSQJC
+    http://localhost:8080/oauth/token?client_id=authCode&client_secret=123456&grant_type=authorization_code&code=spSQJC
 
 E步骤中，认证服务器发送的HTTP回复，包含以下参数：
     access_token：表示访问令牌，必选项。
@@ -76,8 +76,6 @@ eg:
     "scope":"get_user_info get_fans_list"
 }
 
-
-从上面代码可以看到，相关参数使用JSON格式发送（Content-Type: application/json）。此外，HTTP头信息中明确指定不得缓存。
 ----------------------------------------------------------------------------------------------------------------------------
 ### 密码模式
 密码模式图
@@ -133,5 +131,3 @@ C步骤中，认证服务器回应客户端的URI，包含以下参数：
     scope：表示权限范围，如果与客户端申请的范围一致，此项可省略。
     state：如果客户端的请求中包含这个参数，认证服务器的回应也必须一模一样包含这个参数。
 地址栏：http://localhost:8080/qq/easy/redirect#access_token=269907bc-de39-4713-b6f6-86da0e339084&token_type=bearer&expires_in=43199&scope=get_user_info
-
-### 刷新token
