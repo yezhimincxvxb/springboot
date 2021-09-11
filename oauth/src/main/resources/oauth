@@ -30,7 +30,7 @@ OAuth在"客户端"与"服务提供商"之间，设置了一个授权层（autho
 ### 客户端的授权模式
 客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0定义了四种授权方式。
     授权码模式（authorization_code）
-    简化模式（implicit）
+    简化模式（implicit）(不推荐使用)
     密码模式（password）
     客户端模式（client_credentials）
 
@@ -103,8 +103,7 @@ A步骤中，客户端发出的HTTP请求，包含以下参数：
     grant_type：表示授权类型，此处的值固定为"client_credentials"，必选项。
     scope：表示权限范围，可选项
 eg：
-    http://localhost:8080/oauth/token?grant_type=client_credentials&scope=select
-    &client_id=client_1&client_secret=123456
+    http://localhost:8080/oauth/token?client_id=oauth_client&client_secret=123456&grant_type=client_credentials
 B步骤中，认证服务器向客户端发送访问令牌：
 eg:
 {

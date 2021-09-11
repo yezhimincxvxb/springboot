@@ -100,16 +100,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
     }
 
-    /**
-     * 在内存中创建用户并配置角色
-     * 注意：一个内存中只能同时有一个用户
-     * 正常情况该配置是不需要的
-     */
-//    @Autowired
-//    public void configGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        String password = passwordEncoder().encode("123456");
-//        auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN").and();
-//    }
 
     //Web层面的配置，一般用来配置无需安全检查的路径
 //    @Override
