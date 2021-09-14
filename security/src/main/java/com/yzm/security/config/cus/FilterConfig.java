@@ -1,7 +1,8 @@
-package com.yzm.security.config.token;
+package com.yzm.security.config.cus;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.Filter;
 
@@ -23,7 +24,7 @@ public class FilterConfig {
         registration.setOrder(-1);
         //拦截/*的访问 多级匹配（springboot 过滤器Filter/*以及匹配 /**多级匹配）
         registration.addUrlPatterns("/*");
-        registration.addInitParameter("excludedUris","/filter/index,/filter/login");
+        registration.addInitParameter("excludedUris","/index,/filter/login");
         return registration;
     }
 

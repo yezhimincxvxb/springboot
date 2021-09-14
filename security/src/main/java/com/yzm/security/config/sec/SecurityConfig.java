@@ -1,8 +1,5 @@
-package com.yzm.security.config;
+package com.yzm.security.config.sec;
 
-import com.yzm.security.jwt.JwtAuthenticateFilter;
-import com.yzm.security.jwt.JwtAuthenticateProvider;
-import com.yzm.security.jwt.JwtAuthorizationFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +9,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public final UserDetailsService userDetailsService;
 
-    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+    public SecurityConfig(@Qualifier("secUserDetailsServiceImpl") UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -54,7 +51,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(new JwtAuthenticateProvider(userDetailsService, passwordEncoder()));
+        // 从内存创建用户
+        /*auth.inMemoryAuthentication()
+                .withUser("admin")
+                .password(passwordEncoder().encode("123456"))
+                .roles("ADMIN")
+                .authorities("CREATE", "UPDATE", "DELETE", "SELECT")
+                .and()
+                .withUser("yzm")
+                .password(passwordEncoder().encode("123456"))
+                .roles("USER")
+                .authorities("SELECT")
+        ;*/
+
+        // 从数据库获取用户
+        //auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.authenticationProvider(new SecAuthenticationProvider(userDetailsService,passwordEncoder()));
     }
 
     //配置资源权限规则
@@ -64,15 +76,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 禁用 csrf, 由于使用的是JWT，我们这里不需要   csrf
                 .cors().and()
                 .csrf().disable()
-                //基于Token，因为不需要Session;设置 session 状态 STATELESS 无状态
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         ;
 
         http
                 //表单登录：使用默认的表单登录页面和登录端点/login进行登录
+//                .formLogin().permitAll()
+                //自定义登录界面
                 .formLogin()
-                .loginProcessingUrl("/login")
+                .loginPage("/user/login") //指定登录页的路径，默认/login
+                .loginProcessingUrl("/login") //指定自定义form表单请求的路径(必须跟login.html中的form action=“url”一致)
                 .permitAll()
+                .and()
+                // 异常处理
+                .exceptionHandling()
+                .accessDeniedPage("/login?authorization_error=true")
                 .and()
                 //退出登录：使用默认的退出登录端点/logout退出登录
                 .logout()
@@ -85,7 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 访问路径URL的授权策略，如登录、Swagger访问免登录认证等
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //跨域预检请求
-                .antMatchers("/toHome", "user/login").permitAll() //指定url放行
+                .antMatchers("/home", "/user/register","user/login").permitAll() //指定url放行
                 .antMatchers("/swagger**/**", "/v2/**").permitAll() //swagger文档
                 .antMatchers("/druid/**").permitAll() //查看SQL监控（druid）
                 .anyRequest().authenticated() //其他任何请求都需要身份认证
@@ -93,24 +110,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 // 登录认证过滤器
-                .addFilterBefore(new JwtAuthenticateFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new SecAuthenticateFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 // 访问鉴权过滤器
-                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new SecAuthorizationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 // 退出登录处理器，因为是前后端分离，防止内置的登录处理器在后台进行跳转
-                .logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
+                .logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+        ;
     }
 
-
-    //Web层面的配置，一般用来配置无需安全检查的路径
-//    @Override
-//    public void configure(WebSecurity web) throws Exception {
-//        web.ignoring()
-//                .antMatchers("**.js", "**.css",
-//                        "/images/**",
-//                        "/webjars/**",
-//                        "/**/favicon.ico",
-//                        "/swagger-ui.html", "/v2/**"
-//                );
-//    }
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        // 设置拦截忽略文件夹，可以对静态资源放行
+        web.ignoring().antMatchers("/static/css/**","/static/js/**","/swagger**/**", "/v2/**");
+    }
 
 }

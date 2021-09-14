@@ -1,4 +1,4 @@
-package com.yzm.security.jwt;
+package com.yzm.security.config.sec;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -8,11 +8,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class JwtAuthenticateProvider extends DaoAuthenticationProvider {
+public class SecAuthenticationProvider extends DaoAuthenticationProvider {
 
-    public JwtAuthenticateProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        setUserDetailsService(userDetailsService);
-        setPasswordEncoder(passwordEncoder);
+    public SecAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        super.setUserDetailsService(userDetailsService);
+        super.setPasswordEncoder(passwordEncoder);
     }
 
     /**
@@ -30,4 +30,5 @@ public class JwtAuthenticateProvider extends DaoAuthenticationProvider {
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         super.additionalAuthenticationChecks(userDetails, authentication);
     }
+
 }

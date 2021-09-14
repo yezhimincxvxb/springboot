@@ -6,6 +6,8 @@ import com.yzm.security.service.PermissionsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务实现类
@@ -16,5 +18,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PermissionsServiceImpl extends ServiceImpl<PermissionsMapper, Permissions> implements PermissionsService {
+
+    @Override
+    public List<Permissions> getPermissions(List<Integer> roleIds) {
+        return this.baseMapper.getPermissions(roleIds);
+    }
 
 }

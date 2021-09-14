@@ -20,10 +20,10 @@ public class Generator {
     //创建人
     private static final String author = "Yzm";
     //需要生成实体类等基础信息的表名，多个用逗号隔开
-    private static final String[] tables = {"permissions"};
+    private static final String[] tables = {"role"};
     //生成文件指定在哪个目录下
-    private static final String baoPath = "com.yzm.shiro";
-    private static final String module = "shiro";
+    private static final String baoPath = "com.yzm.security";
+    private static final String module = "security";
     //数据源连接
     private static final String driverName = "com.mysql.cj.jdbc.Driver";
     private static final String url = "jdbc:mysql://localhost:3306/test2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai";

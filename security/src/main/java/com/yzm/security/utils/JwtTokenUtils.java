@@ -1,14 +1,16 @@
 package com.yzm.security.utils;
 
-import com.yzm.security.jwt.JwtUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
@@ -23,14 +25,16 @@ public class JwtTokenUtils implements Serializable {
 
     private static final long serialVersionUID = 8527289053988618229L;
     /**
+     * token头
      * token前缀
      */
-    public static final String TOKEN_PREFIX  = "Basic ";
     public static final String TOKEN_HEADER = "Authorization";
+    public static final String TOKEN_PREFIX = "Basic ";
     /**
      * 用户名称
      */
     public static final String USERNAME = Claims.SUBJECT;
+    public static final String PASSWORD = "password";
     /**
      * 权限列表
      */
@@ -38,32 +42,55 @@ public class JwtTokenUtils implements Serializable {
     /**
      * 密钥
      */
-    private static final String SECRET = "abcdefgh";
+    private static final String SECRET = "abcdefg";
+    private static final String JWT_SECRET = "7786df7fc3a34e26a61c034d5ec8245d";
     /**
-     * 有效期12小时
+     * 过期时间5分钟
+     * 刷新时间2分钟
      */
-    private static final long EXPIRE_TIME = 12 * 60 * 60 * 1000;
+    public static final long TOKEN_EXPIRED_TIME = 5 * 60 * 1000L;
+    public static final long TOKEN_REFRESH_TIME = 2 * 60 * 1000L;
 
-    /**
-     * 生成令牌
-     */
     public static String generateToken(Authentication authentication) {
         Map<String, Object> claims = new HashMap<>();
         UserDetails principal = (UserDetails) authentication.getPrincipal();
         claims.put(USERNAME, principal.getUsername());
         claims.put(AUTHORITIES, authentication.getAuthorities());
-        return generateToken(claims);
+        return generateToken(claims, 0L);
     }
 
-    private static String generateToken(Map<String, Object> claims) {
-        Date expirationDate = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+    public static String generateToken(Map<String, Object> claims) {
+        return generateToken(claims, 0L);
+    }
+
+    /**
+     * 生成令牌
+     */
+    public static String generateToken(Map<String, Object> claims, long expireTime) {
+        if (expireTime <= 0L) expireTime = TOKEN_EXPIRED_TIME;
+
+        Map<String, Object> headMap = new HashMap<>();
+        headMap.put("typ", "JWT");
+        headMap.put("alg", "HS256");
+
         return Jwts.builder()
+                .setHeader(headMap)
+                //JWT的唯一标识，根据业务需要，这个可以设置为一个不重复的值，主要用来作为一次性token,从而回避重放攻击
                 .setId(UUID.randomUUID().toString())
+                //.setIssuer("该JWT的签发者，是否使用是可选的")
+                //.setSubject("该JWT所面向的用户，是否使用是可选的")
+                //.setAudience("接收该JWT的一方，是否使用是可选的")
+                //如果有私有声明，一定要先设置这个自己创建的私有的声明，这个是给builder的claim赋值，一旦写在标准的声明赋值之后，就是覆盖了那些标准的声明的
                 .setClaims(claims)
-                .setIssuedAt(new Date()) // 签发时间
-                .setNotBefore(new Date())  // 生效时间
-                .setExpiration(expirationDate) // 过期时间
-                .signWith(SignatureAlgorithm.HS512, SECRET)
+                //签发时间(token生成时间)
+                .setIssuedAt(new Date())
+                //生效时间(在指定时间之前令牌是无效的)
+                .setNotBefore(new Date())
+                //过期时间(在指定时间之后令牌是无效的)
+                .setExpiration(new Date(System.currentTimeMillis() + expireTime))
+                //设置签名使用的签名算法和签名使用的秘钥
+//                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .signWith(SignatureAlgorithm.HS256, generalKey())
                 .compact();
     }
 
@@ -74,7 +101,9 @@ public class JwtTokenUtils implements Serializable {
         Claims claims;
         try {
             claims = Jwts.parser()
-                    .setSigningKey(SECRET)
+                    //签名秘钥
+//                    .setSigningKey(SECRET)
+                    .setSigningKey(generalKey())
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
@@ -82,11 +111,20 @@ public class JwtTokenUtils implements Serializable {
             claims = e.getClaims();
         }
 
+        //和当前时间进行对比来判断是否过期
         if (new Date().before(claims.getExpiration()))
             return claims;
         return null;
     }
 
+    /**
+     * 由密钥生成加密key
+     */
+    public static SecretKey generalKey() {
+        byte[] encodedKey = Base64.decodeBase64(SECRET);
+//        return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+        return new SecretKeySpec(encodedKey, SignatureAlgorithm.HS256.getJcaName());
+    }
 
     /**
      * 从令牌中获取用户名
@@ -108,6 +146,24 @@ public class JwtTokenUtils implements Serializable {
             token = token.substring(TOKEN_PREFIX.length());
         }
         return token;
+    }
+
+    public static void main(String[] args) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(JwtTokenUtils.USERNAME, "admin");
+        claims.put(JwtTokenUtils.PASSWORD, 123456);
+
+        //生成token
+        String token = JwtTokenUtils.generateToken(claims);
+        System.out.println(token);
+
+        //解析
+        Claims verify = JwtTokenUtils.verifyToken(token);
+        System.out.println(verify.get(JwtTokenUtils.USERNAME, String.class));
+        System.out.println(verify.get(JwtTokenUtils.PASSWORD, Integer.class));
+        System.out.println(verify.getSubject());
+        System.out.println(verify.getIssuedAt());
+        System.out.println(verify.getExpiration());
     }
 
 }

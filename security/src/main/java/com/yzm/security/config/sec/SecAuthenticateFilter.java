@@ -1,19 +1,18 @@
-package com.yzm.security.jwt;
+package com.yzm.security.config.sec;
 
 import com.yzm.security.utils.HttpUtils;
 import com.yzm.security.utils.JwtTokenUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,11 +27,12 @@ import java.io.IOException;
  * <p>
  * 作用：拦截“/login”登录请求，处理表单提交的登录认证
  */
-public class JwtAuthenticateFilter extends UsernamePasswordAuthenticationFilter {
+public class SecAuthenticateFilter extends UsernamePasswordAuthenticationFilter {
 
-    public JwtAuthenticateFilter(AuthenticationManager authManager) {
-        setAuthenticationManager(authManager);
+    public SecAuthenticateFilter(AuthenticationManager authManager) {
+        super.setAuthenticationManager(authManager);
         // 可以修改默认登录地址
+        //super.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/auth/login", "POST"));
         //super.setFilterProcessesUrl("/auth/login");
     }
 

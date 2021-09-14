@@ -6,8 +6,6 @@ import com.yzm.security.mapper.UserMapper;
 import com.yzm.security.service.UserService;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 /**
  * <p>
  * 服务实现类
@@ -24,8 +22,4 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return this.baseMapper.findByUsername(username);
     }
 
-    @Override
-    public Set<String> findPermissions(String username) {
-        return this.baseMapper.findPermissions(username);
-    }
 }

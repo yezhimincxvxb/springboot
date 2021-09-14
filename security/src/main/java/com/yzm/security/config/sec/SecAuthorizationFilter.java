@@ -1,13 +1,9 @@
-package com.yzm.security.jwt;
+package com.yzm.security.config.sec;
 
-import com.yzm.security.service.UserService;
 import com.yzm.security.utils.JwtTokenUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,23 +19,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * 权限验证过滤器
  */
 @Slf4j
-public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-
-    @Autowired
-    @Qualifier("userServiceImpl")
-    private UserService userService;
+public class SecAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public SecAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
         this.authenticationManager = authenticationManager;
     }
@@ -51,17 +42,18 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             if (StringUtils.isNotBlank(token)) {
                 Claims claims = JwtTokenUtils.verifyToken(token);
                 if (claims != null) {
-                    String tokenUsername = claims.getSubject();
-                    if (authenticationIsRequired(tokenUsername)) {
-                        Collection<GrantedAuthority> grantedAuthorities = (Collection<GrantedAuthority>) claims.get(JwtTokenUtils.AUTHORITIES);
-                        if (grantedAuthorities == null) {
-                            Set<String> permissions = userService.findPermissions(tokenUsername);
-                            grantedAuthorities = permissions.stream()
-                                    .map(SimpleGrantedAuthority::new)
-                                    .collect(Collectors.toList());
+                    String username = claims.getSubject();
+                    if (authenticationIsRequired(username)) {
+
+                        Object authors = claims.get(JwtTokenUtils.AUTHORITIES);
+                        List<GrantedAuthority> authorities = new ArrayList<>();
+                        if (authors instanceof List) {
+                            for (Object object : (List) authors) {
+                                authorities.add(new SimpleGrantedAuthority((String) ((Map) object).get("authority")));
+                            }
                         }
 
-                        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(tokenUsername, null, grantedAuthorities);
+                        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, null, authorities);
                         authRequest.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         Authentication authenticate = this.authenticationManager.authenticate(authRequest);
 
@@ -74,6 +66,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             }
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
+            log.info("Failed to process authentication request");
             return;
         }
         chain.doFilter(request, response);

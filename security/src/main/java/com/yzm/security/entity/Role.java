@@ -11,33 +11,34 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ * 角色表
  * </p>
  *
  * @author Yzm
- * @since 2021-08-21
+ * @since 2021-09-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("permissions")
-public class Permissions implements Serializable {
+@TableName("role")
+public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "p_id", type = IdType.AUTO)
-    private Integer pId;
+    @TableId(value = "r_id", type = IdType.AUTO)
+    private Integer rId;
 
     /**
-     * 权限名称
+     * 角色名称
      */
-    @TableField("p_name")
-    private String pName;
+    @TableField("r_name")
+    private String rName;
 
     /**
-     * 权限名称
+     * 角色描述
      */
-    @TableField("p_desc")
-    private String pDesc;
+    @TableField("r_desc")
+    private String rDesc;
+
 
 }

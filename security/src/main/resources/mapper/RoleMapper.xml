@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yzm.security.mapper.RoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yzm.security.entity.Role">
+        <id column="r_id" property="rId" />
+        <result column="r_name" property="rName" />
+        <result column="r_desc" property="rDesc" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        r_id, r_name, r_desc
+    </sql>
+
+    <select id="getRoles" resultMap="BaseResultMap" >
+        select r.r_id, r.r_name, r.r_desc
+        from `role` r
+                 left join user_role ur on r.r_id = ur.r_id
+        where ur.u_id = #{userid}
+    </select>
+
+</mapper>

@@ -1,6 +1,5 @@
 package com.yzm.security.config;
 
-import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -9,20 +8,20 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import springfox.documentation.service.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//@Configuration
-//@EnableSwagger2
+@Configuration
+@EnableSwagger2
 public class SwaggerConfig {
 
     @Bean
-    public Docket createRestApi(){
+    public Docket createRestApi() {
         // 添加请求参数，我们这里把token作为请求头部参数传入后端
         ParameterBuilder parameterBuilder = new ParameterBuilder();
         List<Parameter> parameters = new ArrayList<>();
@@ -44,7 +43,7 @@ public class SwaggerConfig {
                 .globalOperationParameters(parameters);
     }
 
-    private ApiInfo apiInfo(){
+    private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("SpringBoot API Doc")
                 .description("This is a restful api document of Spring Boot.")
