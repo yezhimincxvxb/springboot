@@ -7,14 +7,14 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 权限表 服务类
  * </p>
  *
  * @author Yzm
- * @since 2021-08-21
+ * @since 2021-09-15
  */
 public interface PermissionsService extends IService<Permissions> {
 
-    List<Permissions> getPermissions(List<Integer> roleIds);
+    List<Permissions> getPerms(List<Integer> roleIds);
 
 }

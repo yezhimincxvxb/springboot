@@ -10,18 +10,17 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 权限表 服务实现类
  * </p>
  *
  * @author Yzm
- * @since 2021-08-21
+ * @since 2021-09-15
  */
 @Service
 public class PermissionsServiceImpl extends ServiceImpl<PermissionsMapper, Permissions> implements PermissionsService {
 
     @Override
-    public List<Permissions> getPermissions(List<Integer> roleIds) {
-        return this.baseMapper.getPermissions(roleIds);
+    public List<Permissions> getPerms(List<Integer> roleIds) {
+        return baseMapper.getPerms(roleIds);
     }
-
 }

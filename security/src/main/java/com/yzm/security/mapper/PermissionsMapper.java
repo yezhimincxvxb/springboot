@@ -8,14 +8,14 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * 权限表 Mapper 接口
  * </p>
  *
  * @author Yzm
- * @since 2021-08-21
+ * @since 2021-09-15
  */
 public interface PermissionsMapper extends BaseMapper<Permissions> {
 
-    List<Permissions> getPermissions(@Param("roleIds") List<Integer> roleIds);
+    List<Permissions> getPerms(@Param("roleIds") List<Integer> roleIds);
 
 }

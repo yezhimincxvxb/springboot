@@ -1,9 +1,10 @@
-package com.yzm.security.config.sec;
+package com.yzm.security.config;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,10 +13,16 @@ import java.util.Set;
 public class SecUserDetails extends User {
 
     private static final long serialVersionUID = 3033317408164827323L;
+    private List<Integer> roleIds;
     private Set<String> permissions;
 
     public SecUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         this(username, password, true, true, true, true, authorities);
+    }
+
+    public SecUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities, List<Integer> roleIds) {
+        this(username, password, true, true, true, true, authorities);
+        this.roleIds = roleIds;
     }
 
     public SecUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities, Set<String> permissions) {
@@ -32,6 +39,14 @@ public class SecUserDetails extends User {
             boolean accountNonLocked,
             Collection<? extends GrantedAuthority> authorities) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+    }
+
+    public List<Integer> getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(List<Integer> roleIds) {
+        this.roleIds = roleIds;
     }
 
     public Set<String> getPermissions() {

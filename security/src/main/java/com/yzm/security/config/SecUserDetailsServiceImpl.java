@@ -1,9 +1,7 @@
-package com.yzm.security.config.sec;
+package com.yzm.security.config;
 
-import com.yzm.security.entity.Permissions;
 import com.yzm.security.entity.Role;
 import com.yzm.security.entity.User;
-import com.yzm.security.service.PermissionsService;
 import com.yzm.security.service.RoleService;
 import com.yzm.security.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -28,12 +25,10 @@ public class SecUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final PermissionsService permissionsService;
 
-    public SecUserDetailsServiceImpl(UserService userService, RoleService roleService, PermissionsService permissionsService) {
+    public SecUserDetailsServiceImpl(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.permissionsService = permissionsService;
     }
 
     @Override
@@ -46,16 +41,14 @@ public class SecUserDetailsServiceImpl implements UserDetailsService {
                 throw new UsernameNotFoundException(String.format("用户'%s'不存在", username));
             }
 
-            List<Role> roles = roleService.getRoles(user.getId());
-            List<Integer> roleIds = roles.stream().map(Role::getRId).collect(Collectors.toList());
-
-            // 用户权限列表，根据用户拥有的权限标识与如 @PreAuthorize("hasAuthority('delete')") 标注的接口对比，决定是否可以调用接口
-            List<Permissions> permissionsList = permissionsService.getPermissions(roleIds);
-            Set<String> permissions = permissionsList.stream().map(Permissions::getPName).collect(Collectors.toSet());
-            List<SimpleGrantedAuthority> grantedAuthorities = permissions.stream()
+            List<Role> roleList = roleService.getRoles(user.getId());
+            List<Integer> roleIds = roleList.stream().map(Role::getRId).collect(Collectors.toList());
+            List<SimpleGrantedAuthority> authorities = roleList.stream()
+                    .map(Role::getRName)
+                    .distinct()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
-            return new SecUserDetails(username, user.getPassword(), grantedAuthorities);
+            return new SecUserDetails(username, user.getPassword(), authorities, roleIds);
         }
     }
 }

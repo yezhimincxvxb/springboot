@@ -4,23 +4,23 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.yzm.security.entity.Permissions">
-        <id column="id" property="pId" />
-        <result column="p_name" property="pName" />
-        <result column="p_desc" property="pDesc" />
+        <id column="p_id" property="pId" />
+        <result column="role_id" property="roleId" />
+        <result column="url" property="url" />
+        <result column="perms" property="perms" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, per_name
+        p_id, role_id, url, perms
     </sql>
 
-    <select id="getPermissions" resultMap="BaseResultMap">
-        select p.p_id, p.p_name, p.p_desc
-        from `permissions` p
-        left join role_perm rp on p.p_id = rp.p_id
-        where rp.r_id in
-        <foreach collection="roleIds" item="roleId" separator="," open="(" close=")">
-            #{roleId}
+    <select id="getPerms" resultMap="BaseResultMap">
+        select p_id, role_id, url, perms
+        from permissions
+        where role_id in
+        <foreach collection="roleIds" item="id" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </select>
 

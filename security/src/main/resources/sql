@@ -14,17 +14,13 @@ CREATE TABLE `role` (
 
 CREATE TABLE `permissions` (
   `p_id` int NOT NULL AUTO_INCREMENT,
-  `p_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '权限名称',
-  `p_desc` varchar(255) COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '权限描述',
+  `role_id` int NOT NULL,
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '',
+  `perms` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '权限列表',
   PRIMARY KEY (`p_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='权限表';
 
 CREATE TABLE `user_role` (
   `u_id` int(11) NOT NULL,
   `r_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-CREATE TABLE `role_perm` (
-  `r_id` int(11) NOT NULL,
-  `p_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

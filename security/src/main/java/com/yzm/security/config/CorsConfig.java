@@ -14,6 +14,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/home").setViewName("home");
+        registry.addViewController("/login/invalid").setViewName("invalid");
         registry.addViewController("/user/login").setViewName("login");
     }
 

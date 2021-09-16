@@ -11,11 +11,11 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ * 权限表
  * </p>
  *
  * @author Yzm
- * @since 2021-08-21
+ * @since 2021-09-15
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,16 +28,17 @@ public class Permissions implements Serializable {
     @TableId(value = "p_id", type = IdType.AUTO)
     private Integer pId;
 
-    /**
-     * 权限名称
-     */
-    @TableField("p_name")
-    private String pName;
+    @TableField("role_id")
+    private Integer roleId;
+
+    @TableField("url")
+    private String url;
 
     /**
-     * 权限名称
+     * 权限列表
      */
-    @TableField("p_desc")
-    private String pDesc;
+    @TableField("perms")
+    private String perms;
+
 
 }

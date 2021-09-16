@@ -20,7 +20,7 @@ public class Generator {
     //创建人
     private static final String author = "Yzm";
     //需要生成实体类等基础信息的表名，多个用逗号隔开
-    private static final String[] tables = {"role"};
+    private static final String[] tables = {"permissions"};
     //生成文件指定在哪个目录下
     private static final String baoPath = "com.yzm.security";
     private static final String module = "security";

@@ -1,5 +1,6 @@
 ###
 https://spring.io/projects/spring-security
+https://blog.csdn.net/yuanlaijike/article/details/80249235
 
 ###
 <!-- spring security -->
@@ -9,15 +10,18 @@ https://spring.io/projects/spring-security
 </dependency>
 
 ### 认证流程
-1.请求过来会被过滤器链中的UsernamePasswordAuthenticationFilter拦截到，请求中的用户名和密码被封装成UsernamePasswordAuthenticationToken(Authentication的实现类)
-2.过滤器将UsernamePasswordAuthenticationToken提交给认证管理器(AuthenticationManager)进行认证.
-3.AuthenticationManager委托AuthenticationProvider(DaoAuthenticationProvider)进行认证，AuthenticationProvider通过调用
-    UserDetailsService获取到数据库中存储的用户信息(UserDetails)，然后调用passwordEncoder密码编码器对
-    UsernamePasswordAuthenticationToken中的密码和UserDetails中的密码进行比较
-4.AuthenticationProvider认证成功后封装Authentication并设置好用户的信息(用户名，密码，权限等)返回
-5.Authentication被返回到UsernamePasswordAuthenticationFilter,通过调用SecurityContextHolder工具把Authentication封装成SecurityContext中存储起来。
+1.  请求过来会被过滤器链中的UsernamePasswordAuthenticationFilter拦截到，
+    根据请求中的用户名和密码构造出一个暂时没有鉴权的UsernamePasswordAuthenticationToken(Authentication的实现类)
+    并将UsernamePasswordAuthenticationToken提交给认证管理器(AuthenticationManager)进行认证.
+2.  AuthenticationManager 本身并不做验证处理，他通过 for-each 遍历找到符合当前登录方式的一个 AuthenticationProvider，
+    并交给它进行验证处理，对于用户名密码登录方式，这个 Provider 就是 DaoAuthenticationProvider
+3.  DaoAuthenticationProvider通过调用UserDetailsService获取到数据库中存储的用户信息(UserDetails)，
+    然后调用passwordEncoder密码编码器对UsernamePasswordAuthenticationToken中的密码和UserDetails中的密码进行比较
+4.  DaoAuthenticationProvider认证成功后,会重新构造一个添加了鉴权的 UsernamePasswordAuthenticationToken(用户名，密码，权限等)
+    并传回到 UsernamePasswordAuthenticationFilter
+5.  Authentication被返回到UsernamePasswordAuthenticationFilter,通过调用SecurityContextHolder工具把Authentication封装成SecurityContext中存储起来。
     然后UsernamePasswordAuthenticationFilter调用AuthenticationSuccessHandler.onAuthenticationSuccess做认证成功后续处理操作
-6.最后SecurityContextPersistenceFilter通过SecurityContextHolder.getContext()获取到SecurityContext对象然后调用
+6.  最后SecurityContextPersistenceFilter通过SecurityContextHolder.getContext()获取到SecurityContext对象然后调用
     SecurityContextRepository将SecurityContext存储起来，然后调用SecurityContextHolder.clearContext方法清理SecurityContext。
 注意：SecurityContext是一个和当前线程绑定的工具，在代码的任何地方都可以通过SecurityContextHolder.getContext()获取到登陆信息。
 

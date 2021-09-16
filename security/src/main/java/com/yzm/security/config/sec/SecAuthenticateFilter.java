@@ -5,14 +5,12 @@ import com.yzm.security.utils.JwtTokenUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -78,6 +76,7 @@ public class SecAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
 
         // 生成并返回token给客户端，后续访问携带此token
         HttpUtils.successWrite(response, JwtTokenUtils.generateToken(authResult));
+//        response.setHeader(JwtTokenUtils.TOKEN_HEADER, JwtTokenUtils.generateToken(authResult));
 
         //重定向登录成功地址
         //getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
@@ -90,5 +89,6 @@ public class SecAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
         getRememberMeServices().loginFail(request, response);
         HttpUtils.errorWrite(response, "authentication failed, reason: " + failed.getMessage());
         //getFailureHandler().onAuthenticationFailure(request, response, failed);
+        //super.unsuccessfulAuthentication(request, response, failed);
     }
 }

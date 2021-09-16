@@ -28,7 +28,6 @@
         <module>logback</module>
         <module>thymeleaf</module>
         <module>security</module>
-        <module>security_2</module>
         <module>shiro</module>
         <module>oauth</module>
     </modules>

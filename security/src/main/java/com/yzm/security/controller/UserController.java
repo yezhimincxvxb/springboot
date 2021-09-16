@@ -4,8 +4,9 @@ import com.yzm.security.entity.User;
 import com.yzm.security.service.UserService;
 import com.yzm.security.utils.HttpResult;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,6 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     @GetMapping("/register")
     @ResponseBody
     public String register(String username, String password) {
@@ -38,6 +38,17 @@ public class UserController {
         return "注册成功";
     }
 
+    @GetMapping("/me")
+    @ResponseBody
+    public Object me(@AuthenticationPrincipal UserDetails userDetails) {
+        return userDetails;
+    }
+/*
+    public Object me(Authentication authentication) {
+        return authentication;
+    }
+*/
+
     // 需要认证才能访问
     @GetMapping("/hello")
     @PreAuthorize("isAuthenticated()")
@@ -45,32 +56,46 @@ public class UserController {
         return "hello";
     }
 
-    @GetMapping(value = "/select")
-    @PreAuthorize("hasAuthority('SELECT')")
+    @GetMapping(value = "/toUser")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @ResponseBody
-    public HttpResult findAll() {
-        return HttpResult.ok("the SELECT service is called success.");
+    public HttpResult toUser() {
+        return HttpResult.ok("has user role");
     }
 
-    @GetMapping(value = "/update")
-    @PreAuthorize("hasAuthority('UPDATE')")
+    @GetMapping(value = "/toAdmin")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @ResponseBody
-    public HttpResult update() {
-        return HttpResult.ok("the UPDATE service is called success.");
+    public HttpResult toAdmin() {
+        return HttpResult.ok("has admin role");
     }
 
-    @GetMapping(value = "/delete")
-    @PreAuthorize("hasAuthority('DELETE')")
+    @GetMapping(value = "/adminSelect")
+    @PreAuthorize("hasPermission('/admin','select')")
     @ResponseBody
-    public HttpResult delete() {
-        return HttpResult.ok("the DELETE service is called success.");
+    public HttpResult adminSelect() {
+        return HttpResult.ok("has adminSelect permission");
     }
 
-    @GetMapping(value = "/create")
-    @PreAuthorize("hasAuthority('CREATE')")
+    @GetMapping(value = "/adminDelete")
+    @PreAuthorize("hasPermission('/admin','delete')")
     @ResponseBody
-    public HttpResult save() {
-        return HttpResult.ok("the CREATE service is called success.");
+    public HttpResult adminDelete() {
+        return HttpResult.ok("has adminDelete permission");
+    }
+
+    @GetMapping(value = "/userSelect")
+    @PreAuthorize("hasPermission('/user','select')")
+    @ResponseBody
+    public HttpResult userSelect() {
+        return HttpResult.ok("has userSelect permission");
+    }
+
+    @GetMapping(value = "/userDelete")
+    @PreAuthorize("hasPermission('/user','delete')")
+    @ResponseBody
+    public HttpResult userDelete() {
+        return HttpResult.ok("has userDelete permission");
     }
 
 }

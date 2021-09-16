@@ -9,12 +9,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
@@ -24,10 +24,12 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 @EnableGlobalMethodSecurity(prePostEnabled = true) //启动方法级别的权限控制
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public final UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
+    private final SecPermissionEvaluator customPermissionEvaluator;
 
-    public SecurityConfig(@Qualifier("secUserDetailsServiceImpl") UserDetailsService userDetailsService) {
+    public SecurityConfig(@Qualifier("secUserDetailsServiceImpl") UserDetailsService userDetailsService, SecPermissionEvaluator customPermissionEvaluator) {
         this.userDetailsService = userDetailsService;
+        this.customPermissionEvaluator = customPermissionEvaluator;
     }
 
     /**
@@ -46,13 +48,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
+     * 注入自定义PermissionEvaluator
+     */
+    @Bean
+    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler() {
+        DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
+        handler.setPermissionEvaluator(customPermissionEvaluator);
+        return handler;
+    }
+
+    /**
      * 配置用户
      * 指定默认从哪里获取认证用户的信息，即指定一个UserDetailsService接口的实现类
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // 从内存创建用户
-        /*auth.inMemoryAuthentication()
+/*        auth.inMemoryAuthentication()
                 .withUser("admin")
                 .password(passwordEncoder().encode("123456"))
                 .roles("ADMIN")
@@ -66,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 从数据库获取用户
         //auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        auth.authenticationProvider(new SecAuthenticationProvider(userDetailsService,passwordEncoder()));
+        auth.authenticationProvider(new SecAuthenticationProvider(userDetailsService, passwordEncoder()));
     }
 
     //配置资源权限规则
@@ -80,8 +92,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 //表单登录：使用默认的表单登录页面和登录端点/login进行登录
-//                .formLogin().permitAll()
-                //自定义登录界面
                 .formLogin()
                 .loginPage("/user/login") //指定登录页的路径，默认/login
                 .loginProcessingUrl("/login") //指定自定义form表单请求的路径(必须跟login.html中的form action=“url”一致)
@@ -89,21 +99,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // 异常处理
                 .exceptionHandling()
-                .accessDeniedPage("/login?authorization_error=true")
-                .and()
-                //退出登录：使用默认的退出登录端点/logout退出登录
-                .logout()
-                .permitAll()
-                .and()
-                //记住我：使用默认的“记住我”功能，把记住用户已登录的Token保存在内存里，记住30分钟
-                .rememberMe()
-                .tokenValiditySeconds(1800)
+                .accessDeniedPage("/login?error")
                 .and()
                 // 访问路径URL的授权策略，如登录、Swagger访问免登录认证等
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //跨域预检请求
-                .antMatchers("/home", "/user/register","user/login").permitAll() //指定url放行
-                .antMatchers("/swagger**/**", "/v2/**").permitAll() //swagger文档
+                .antMatchers("/home", "/user/register", "/user/login").permitAll() //指定url放行
+                .antMatchers("/swagger**/**", "/v2/**", "/webjars/**").permitAll() //swagger文档
                 .antMatchers("/druid/**").permitAll() //查看SQL监控（druid）
                 .anyRequest().authenticated() //其他任何请求都需要身份认证
         ;
@@ -117,11 +119,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
         ;
     }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        // 设置拦截忽略文件夹，可以对静态资源放行
-        web.ignoring().antMatchers("/static/css/**","/static/js/**","/swagger**/**", "/v2/**");
-    }
-
 }

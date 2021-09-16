@@ -19,8 +19,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 权限验证过滤器
@@ -61,8 +62,6 @@ public class SecAuthorizationFilter extends BasicAuthenticationFilter {
                         SecurityContextHolder.getContext().setAuthentication(authenticate);
                     }
                 }
-            } else {
-                log.info("token or authorization not included in request header");
             }
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
