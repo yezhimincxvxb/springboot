@@ -25,10 +25,4 @@ public class TestController {
         return "order id : " + id;
     }
 
-
-    @GetMapping("/hello")
-    public String hello(){
-        return "hello";
-    }
-
 }

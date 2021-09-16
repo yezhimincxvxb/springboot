@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
-import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 /**
  * 客户端模式
@@ -89,9 +88,19 @@ public class Client_OAuth2ServerConfig {
         @Override
         public void configure(HttpSecurity http) throws Exception {
             http
+                    .csrf().disable()
+                    .formLogin()
+                    .loginPage("/user/login")
+                    .loginProcessingUrl("/login")
+                    .defaultSuccessUrl("/home",true)
+                    .failureUrl("/user/login?error")
+                    .permitAll()
+                    .and()
                     .authorizeRequests()
-                    .antMatchers("/product/**").authenticated()
+                    .antMatchers("/home", "/user/login").permitAll()
+                    .antMatchers("/oauth/**").permitAll()
                     .antMatchers("/order/**").access("#oauth2.hasScope('select') and hasRole('ROLE_ADMIN')")
+                    .anyRequest().authenticated()
             ;
         }
     }
