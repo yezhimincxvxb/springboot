@@ -13,12 +13,13 @@ public class CorsConfig implements WebMvcConfigurer {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/home").setViewName("home");
+        registry.addViewController("/home").setViewName("home"); // 首页不用登录，直接访问
+        registry.addViewController("/auth/login").setViewName("login"); // 自定义登录url
         registry.addViewController("/login/invalid").setViewName("invalid");
-        registry.addViewController("/user/login").setViewName("login");
     }
 
     /**
+     * 前后端分离可能存在跨域问题
      * 跨域配置
      */
     @Override

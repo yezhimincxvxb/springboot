@@ -1,6 +1,6 @@
-package com.yzm.security.config.cus;
+package com.yzm.jwt.config;
 
-import com.yzm.security.utils.JwtTokenUtils;
+import com.yzm.jwt.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +20,7 @@ public class LoginFilter implements Filter {
 
     // 配置白名单
     private final List<Pattern> patterns = new ArrayList<>();
+    // 存储刷新token，减少token生成
     public static final Map<String, String> TOKEN_MAP = new ConcurrentHashMap<>();
 
     @Override
@@ -32,6 +33,7 @@ public class LoginFilter implements Filter {
                 this.patterns.add(Pattern.compile(split));
             }
         }
+        //Filter.super.init(filterConfig);
     }
 
     @Override
@@ -45,14 +47,14 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        String token = JwtTokenUtils.getTokenFromRequest(request);
+        String token = JwtUtils.getTokenFromRequest(request);
         if (StringUtils.isBlank(token)) {
             log.info("缺少 token 令牌");
             response.getWriter().write("lost token");
             return;
         }
 
-        Claims claims = JwtTokenUtils.verifyToken(token);
+        Claims claims = JwtUtils.verifyToken(token);
         if (claims == null) {
             response.getWriter().write("token expired，please login again!");
             return;
@@ -60,27 +62,27 @@ public class LoginFilter implements Filter {
 
         Date iat = claims.getIssuedAt();
         long currentTime = System.currentTimeMillis();
-        long refreshTime = iat.getTime() + JwtTokenUtils.TOKEN_REFRESH_TIME;
+        long refreshTime = iat.getTime() + JwtUtils.TOKEN_REFRESH_TIME;
         long expireTime = claims.getExpiration().getTime();
 
-        //大于刷新时间且在有效期内，进行刷新token
         String username = claims.getSubject();
-        boolean b = false;
+        boolean isOld = false;
+        //大于刷新时间且在有效期内，进行刷新token
         if (currentTime > refreshTime && currentTime < expireTime) {
-            b = true;
+            isOld = true;
             String autoTokenRe = TOKEN_MAP.get(username);
             if (token.equalsIgnoreCase(autoTokenRe)) {
                 Map<String, Object> map = new HashMap<>();
-                map.put(JwtTokenUtils.USERNAME, username);
-                map.put(JwtTokenUtils.PASSWORD, claims.get(JwtTokenUtils.PASSWORD));
-                autoTokenRe = JwtTokenUtils.generateToken(map);
+                map.put(JwtUtils.USERNAME, username);
+                map.put(JwtUtils.PASSWORD, claims.get(JwtUtils.PASSWORD));
+                autoTokenRe = JwtUtils.generateToken(map);
                 TOKEN_MAP.put(username, autoTokenRe);
             }
-            response.setHeader(JwtTokenUtils.TOKEN_HEADER, autoTokenRe);
+            response.setHeader(JwtUtils.TOKEN_HEADER, autoTokenRe);
             log.info("token 令牌 已刷新，请及时更新");
         }
 
-        log.info("{} token 有效期：" + (claims.getExpiration().getTime() - System.currentTimeMillis()) / 1000 + " 秒", b ? "old" : "new");
+        log.info("{} token 有效期：" + (claims.getExpiration().getTime() - System.currentTimeMillis()) / 1000 + " 秒", isOld ? "old" : "new");
         request.setAttribute("username", username);
         chain.doFilter(request, response);
     }

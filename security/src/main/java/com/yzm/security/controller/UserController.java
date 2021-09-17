@@ -38,6 +38,14 @@ public class UserController {
         return "注册成功";
     }
 
+    @GetMapping("/login")
+    @ResponseBody
+    public String login(String username, String password) {
+        User user = User.builder().username(username).password(passwordEncoder.encode(password)).build();
+        userService.save(user);
+        return "";
+    }
+
     @GetMapping("/me")
     @ResponseBody
     public Object me(@AuthenticationPrincipal UserDetails userDetails) {

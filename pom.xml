@@ -27,6 +27,7 @@
         <module>druid</module>
         <module>logback</module>
         <module>thymeleaf</module>
+        <module>jwt</module>
         <module>security</module>
         <module>shiro</module>
         <module>oauth</module>

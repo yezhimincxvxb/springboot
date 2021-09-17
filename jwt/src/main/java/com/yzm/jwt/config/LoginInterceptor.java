@@ -1,6 +1,6 @@
-package com.yzm.security.config.cus;
+package com.yzm.jwt.config;
 
-import com.yzm.security.utils.JwtTokenUtils;
+import com.yzm.jwt.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
 
+    public static final String ACCESS = "access";
+    public static final String REFRESH = "refresh";
+    // 存储刷新token，减少token生成
     public static final Map<String, String> TOKEN_MAP = new ConcurrentHashMap<>();
 
     @Override
@@ -29,7 +32,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         if (StringUtils.isNotBlank(accessToken)) {
-            Claims claims = JwtTokenUtils.verifyToken(accessToken);
+            Claims claims = JwtUtils.verifyToken(accessToken);
             if (claims == null) {
                 if (StringUtils.isBlank(refreshToken)) {
                     response.getWriter().write("old accessToken expired ! Please replace it with a new one in time");
@@ -44,26 +47,30 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         if (StringUtils.isNotBlank(refreshToken)) {
-            Claims claims = JwtTokenUtils.verifyToken(refreshToken);
+            Claims claims = JwtUtils.verifyToken(refreshToken);
             if (claims == null) {
                 response.getWriter().write("token expired, please login again!");
                 log.info("refresh_token 令牌过期，请重新登录");
             } else {
                 String username = claims.getSubject();
-                String autoTokenRe = TOKEN_MAP.get(username);
-                if (refreshToken.equalsIgnoreCase(autoTokenRe)) {
+                String accToken = TOKEN_MAP.get(username + "_" + ACCESS);
+                String refToken = TOKEN_MAP.get(username + "_" + REFRESH);
+                if (refreshToken.equalsIgnoreCase(refToken)) {
                     Map<String, Object> map = new HashMap<>();
-                    map.put(JwtTokenUtils.USERNAME, username);
-                    map.put(JwtTokenUtils.PASSWORD, claims.get(JwtTokenUtils.PASSWORD));
+                    map.put(JwtUtils.USERNAME, username);
+                    map.put(JwtUtils.PASSWORD, claims.get(JwtUtils.PASSWORD));
 
-                    map.put("type", "access");
-                    String newAccessToken = JwtTokenUtils.generateToken(map, 120 * 1000L);
-                    map.put("type", "refresh");
-                    String newRefreshToken = JwtTokenUtils.generateToken(map, 300L * 1000L);
+                    map.put("type", ACCESS);
+                    accToken = JwtUtils.generateToken(map, 120 * 1000L);
+                    map.put("type", REFRESH);
+                    refToken = JwtUtils.generateToken(map, 300L * 1000L);
 
-                    response.setHeader("access_token", newAccessToken);
-                    response.setHeader("refresh_token", newRefreshToken);
+                    TOKEN_MAP.put(username + "_" + ACCESS, accToken);
+                    TOKEN_MAP.put(username + "_" + REFRESH, refToken);
                 }
+
+                response.setHeader("access_token", accToken);
+                response.setHeader("refresh_token", refToken);
                 request.setAttribute("username", username);
                 log.info("refreshToken 剩余有效时间：" + (claims.getExpiration().getTime() - System.currentTimeMillis()) / 1000 + " 秒");
                 return true;

@@ -13,6 +13,7 @@ import java.util.Set;
 public class SecUserDetails extends User {
 
     private static final long serialVersionUID = 3033317408164827323L;
+    //
     private List<Integer> roleIds;
     private Set<String> permissions;
 
