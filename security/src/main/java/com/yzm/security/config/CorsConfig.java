@@ -1,5 +1,6 @@
 package com.yzm.security.config;
 
+import com.yzm.security.constant.SysConstant;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -14,8 +15,8 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/home").setViewName("home"); // 首页不用登录，直接访问
-        registry.addViewController("/auth/login").setViewName("login"); // 自定义登录url
-        registry.addViewController("/login/invalid").setViewName("invalid");
+        registry.addViewController(SysConstant.LOGIN_PAGE).setViewName("login"); // 自定义登录url
+        registry.addViewController("/invalid").setViewName("invalid");
     }
 
     /**

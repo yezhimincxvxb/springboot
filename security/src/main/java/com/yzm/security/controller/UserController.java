@@ -3,9 +3,14 @@ package com.yzm.security.controller;
 import com.yzm.security.entity.User;
 import com.yzm.security.service.UserService;
 import com.yzm.security.utils.HttpResult;
+import com.yzm.security.utils.JwtTokenUtils;
 import io.swagger.annotations.Api;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -24,10 +29,12 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @GetMapping("/register")
@@ -41,14 +48,18 @@ public class UserController {
     @GetMapping("/login")
     @ResponseBody
     public String login(String username, String password) {
-        User user = User.builder().username(username).password(passwordEncoder.encode(password)).build();
-        userService.save(user);
-        return "";
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        // 执行登录认证过程
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        // 认证成功存储认证信息到上下文
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 生成令牌并返回给客户端
+        return JwtTokenUtils.generateToken(authentication);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/info")
     @ResponseBody
-    public Object me(@AuthenticationPrincipal UserDetails userDetails) {
+    public Object info(@AuthenticationPrincipal UserDetails userDetails) {
         return userDetails;
     }
 /*

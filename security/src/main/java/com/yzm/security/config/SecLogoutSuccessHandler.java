@@ -1,17 +1,21 @@
-package com.yzm.security.config.sec1;
+package com.yzm.security.config;
 
+import com.yzm.security.constant.SysConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 退出登录成功后进行业务处理
+ */
 @Slf4j
-public class SecLogoutSuccessHandler implements LogoutSuccessHandler {
+public class SecLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -23,7 +27,7 @@ public class SecLogoutSuccessHandler implements LogoutSuccessHandler {
             }
         }
         // 重定向到登录页
-        response.sendRedirect("/user/login");
+        response.sendRedirect(request.getContextPath() + SysConstant.LOGIN_PAGE + "?logout");
     }
 
 }

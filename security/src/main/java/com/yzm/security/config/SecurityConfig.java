@@ -1,9 +1,6 @@
 package com.yzm.security.config;
 
-import com.yzm.security.config.sec1.SecExpiredSessionStrategy;
-import com.yzm.security.config.sec1.SecLoginFailureHandler;
-import com.yzm.security.config.sec1.SecLoginSuccessHandler;
-import com.yzm.security.config.sec1.SecLogoutSuccessHandler;
+import com.yzm.security.constant.SysConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -66,6 +63,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
+    /**
+     * session 管理
+     */
     @Bean
     public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();
@@ -77,7 +77,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // 从内存创建用户
+/*        auth.inMemoryAuthentication()
+                .withUser("admin")
+                .password(passwordEncoder().encode("123456"))
+                .roles("ADMIN")
+                .authorities("CREATE", "UPDATE", "DELETE", "SELECT")
+                .and()
+                .withUser("yzm")
+                .password(passwordEncoder().encode("123456"))
+                .roles("USER")
+                .authorities("SELECT")
+        ;
+*/
+        // 从数据库获取用户
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+//        auth.authenticationProvider(new SecAuthenticationProvider(userDetailsService, passwordEncoder()));
     }
 
     //配置资源权限规则
@@ -86,9 +101,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
 
-                // 自定义表单登录
+                // 登录
                 .formLogin()
-                .loginPage("/auth/login") //指定登录页的路径，默认/login
+                .loginPage(SysConstant.LOGIN_PAGE) //指定登录页的路径，默认/login
                 .loginProcessingUrl("/login") //指定自定义form表单请求的路径(必须跟login.html中的form action=“url”一致)
 //                .defaultSuccessUrl("/home", true) //登录成功跳转
 //                .failureUrl("/user/login?error")//登录失败跳转
@@ -97,35 +112,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
 
-                //退出登录：使用默认的退出登录端点/logout退出登录
+                // 退出登录
                 .logout()
-                .logoutUrl("/signout")
-                .deleteCookies("JSESSIONID")
+//                .logoutUrl("/signout")
+//                .deleteCookies("JSESSIONID")
+//                .logoutSuccessUrl(SysConstant.LOGIN_PAGE + "?logout")
                 .logoutSuccessHandler(new SecLogoutSuccessHandler())
                 .permitAll()
                 .and()
 
-                //记住我：使用默认的“记住我”功能，把记住用户已登录的Token保存在内存里，记住30分钟
+                // 记住我：使用默认的“记住我”功能，把记住用户已登录的Token保存在内存里，记住30分钟
                 .rememberMe()
+                .tokenValiditySeconds(1800) // 有效时间，单位秒
                 //.tokenRepository(getPersistentTokenRepository()) // 将token存到数据库
                 //.userDetailsService(userDetailsService)
-                .tokenValiditySeconds(1800)
                 .and()
 
                 // 访问路径URL的授权策略，如登录、Swagger访问免登录认证等
                 .authorizeRequests()
-                .antMatchers("/home", "/user/register", "/user/login", "/login/invalid", "/kick").permitAll() //指定url放行
-                .antMatchers("/swagger**/**", "/v2/**", "/webjars").permitAll() //swagger文档
+                .antMatchers("/home", "/user/register", "/user/login", "/auth/login", "/invalid", "/kick").permitAll() //指定url放行
+                .antMatchers("/swagger**/**", "/v2/**", "/webjars/**").permitAll() //swagger文档
                 .antMatchers("/druid/**").permitAll() //查看SQL监控（druid）
                 .anyRequest().authenticated() //其他任何请求都需要身份认证
                 .and()
 
-                //session 管理
+                // session 管理
                 .sessionManagement()
-                .invalidSessionUrl("/login/invalid") // Session 已过期 跳转url
+                // 1.session 超时，默认60秒，即60秒内无操作就会过期
+                // server.servlet.session.timeout=60
+//                .invalidSessionUrl("/invalid")
+                .invalidSessionStrategy(new SecSessionInvalidStrategy())
+                // 2.session 并发控制：控制一个账号同一时刻最多能登录多少个
                 .maximumSessions(1) // 限制最大登陆数
-                .maxSessionsPreventsLogin(true) // 当达到最大值时，是否保留已经登录的用户 true：第一个浏览器登录的用户还在，第二个浏览器试图登录但无法登录；false：第一个浏览器登录的用户会提示被迫下线，第二个浏览器试图登录能成功登录
-                .expiredSessionStrategy(new SecExpiredSessionStrategy()) // 当达到最大值时，旧用户被踢出后的操作
+                .maxSessionsPreventsLogin(false) // 当达到最大值时，是否保留已经登录的用户 true：第一个浏览器登录的用户还在，第二个浏览器试图登录但无法登录；false：第一个浏览器登录的用户会提示被迫下线，第二个浏览器试图登录能成功登录
+//                .expiredUrl("/invalid")
+                .expiredSessionStrategy(new SecSessionExpiredStrategy()) // 当达到最大值时，旧用户被踢出后的操作
+                // 3.手动使Session立即失效
                 .sessionRegistry(sessionRegistry())
         ;
     }
