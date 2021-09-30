@@ -40,5 +40,11 @@ public class Role implements Serializable {
     @TableField("r_desc")
     private String rDesc;
 
+    /**
+     * 权限Id集合
+     */
+    @TableField("p_ids")
+    private String pIds;
+
 
 }

@@ -14,19 +14,29 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ShiroRealm extends AuthorizingRealm {
+public class DbShiroRealm extends AuthorizingRealm {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RoleService roleService;
-    @Autowired
-    private PermissionsService permissionsService;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final PermissionsService permissionsService;
+
+    public DbShiroRealm(UserService userService, RoleService roleService, PermissionsService permissionsService) {
+        this.userService = userService;
+        this.roleService = roleService;
+        this.permissionsService = permissionsService;
+    }
+
+    @Override
+    public boolean supports(AuthenticationToken token) {
+        return token instanceof UsernamePasswordToken;
+    }
 
     /**
      * 角色授权
@@ -38,10 +48,21 @@ public class ShiroRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         String username = (String) principalCollection.getPrimaryPrincipal();
         User user = userService.findUserByName(username);
-        List<Role> roles = roleService.getRoles(user.getId());
-        List<Integer> roleIds = roles.stream().map(Role::getRId).collect(Collectors.toList());
-        List<String> roleNames = roles.stream().map(Role::getRName).collect(Collectors.toList());
-        List<Permissions> permissions = permissionsService.getPermissions(roleIds);
+        List<Integer> roleIds = Arrays.stream(user.getRIds().split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        List<Role> roles = roleService.getRoles(roleIds);
+        Set<String> roleNames = new HashSet<>(roles.size());
+        Set<Integer> permIds = new HashSet<>();
+        roles.forEach(role -> {
+            roleNames.add(role.getRName());
+            Set<Integer> collect = Arrays.stream(
+                    role.getPIds().split(",")).map(Integer::parseInt).collect(Collectors.toSet());
+            permIds.addAll(collect);
+        });
+
+        List<Permissions> permissions = permissionsService.getPermissions(permIds);
         List<String> permNames = permissions.stream().map(Permissions::getPName).collect(Collectors.toList());
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();

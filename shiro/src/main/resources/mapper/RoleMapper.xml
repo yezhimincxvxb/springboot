@@ -4,21 +4,26 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.yzm.shiro.entity.Role">
-        <id column="r_id" property="rId" />
-        <result column="r_name" property="rName" />
-        <result column="r_desc" property="rDesc" />
+        <id column="r_id" property="rId"/>
+        <result column="r_name" property="rName"/>
+        <result column="r_desc" property="rDesc"/>
+        <result column="p_ids" property="pIds"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        r_id, r_name, r_desc
+        r_id
+        , r_name, r_desc, p_ids
     </sql>
 
-    <select id="getRoles" resultMap="BaseResultMap" >
-        select r.r_id, r.r_name, r.r_desc
-        from `role` r
-        left join user_role ur on r.r_id = ur.r_id
-        where ur.u_id = #{userid}
+    <select id="getRoles" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from `role`
+        where r_id in
+        <foreach collection="roleIds" item="roleId" separator="," open="(" close=")">
+            #{roleId}
+        </foreach>
     </select>
 
 </mapper>

@@ -1,4 +1,4 @@
-package com.yzm.security.config.sec;
+package com.yzm.security.config;
 
 import com.yzm.security.config.SecUserDetails;
 import com.yzm.security.entity.Permissions;
@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 细粒度的权限控制
+ */
 @Component
 public class SecPermissionEvaluator implements PermissionEvaluator {
 

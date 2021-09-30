@@ -1,4 +1,4 @@
-package com.yzm.security.utils;
+package com.yzm.shiro.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -6,8 +6,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -21,7 +19,7 @@ import java.util.UUID;
 /**
  * JWT工具类
  */
-public class JwtTokenUtils implements Serializable {
+public class JwtUtils implements Serializable {
 
     private static final long serialVersionUID = 8527289053988618229L;
     /**
@@ -50,13 +48,6 @@ public class JwtTokenUtils implements Serializable {
      */
     public static final long TOKEN_EXPIRED_TIME = 5 * 60 * 1000L;
     public static final long TOKEN_REFRESH_TIME = 2 * 60 * 1000L;
-
-    public static String generateToken(Authentication authentication) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(USERNAME, authentication.getName());
-        claims.put(AUTHORITIES, authentication.getAuthorities());
-        return generateToken(claims, 0L);
-    }
 
     public static String generateToken(Map<String, Object> claims) {
         return generateToken(claims, 0L);
@@ -147,22 +138,5 @@ public class JwtTokenUtils implements Serializable {
         return token;
     }
 
-    public static void main(String[] args) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtTokenUtils.USERNAME, "admin");
-        claims.put(JwtTokenUtils.PASSWORD, 123456);
-
-        //生成token
-        String token = JwtTokenUtils.generateToken(claims);
-        System.out.println(token);
-
-        //解析
-        Claims verify = JwtTokenUtils.verifyToken(token);
-        System.out.println(verify.get(JwtTokenUtils.USERNAME, String.class));
-        System.out.println(verify.get(JwtTokenUtils.PASSWORD, Integer.class));
-        System.out.println(verify.getSubject());
-        System.out.println(verify.getIssuedAt());
-        System.out.println(verify.getExpiration());
-    }
-
 }
+

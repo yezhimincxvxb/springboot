@@ -3,6 +3,7 @@ package com.yzm.security.controller;
 import com.yzm.security.entity.User;
 import com.yzm.security.service.UserService;
 import com.yzm.security.utils.HttpResult;
+import com.yzm.security.utils.HttpUtils;
 import com.yzm.security.utils.JwtTokenUtils;
 import io.swagger.annotations.Api;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 /**
@@ -59,11 +63,11 @@ public class UserController {
 
     @GetMapping("/info")
     @ResponseBody
-    public Object info(@AuthenticationPrincipal UserDetails userDetails) {
-        return userDetails;
+    public void info(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws IOException {
+        HttpUtils.successWrite(response, userDetails);
     }
 /*
-    public Object me(Authentication authentication) {
+    public Object info(Authentication authentication) {
         return authentication;
     }
 */
@@ -75,8 +79,14 @@ public class UserController {
         return "hello";
     }
 
+    /**
+     * hasRole、hasAnyRole判断角色
+     * 数据库存储的角色名称必须有‘ROLE_’前缀
+     * 使用时可加可不加‘ROLE_’前缀
+     */
     @GetMapping(value = "/toUser")
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('USER')")
+//    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @ResponseBody
     public HttpResult toUser() {
         return HttpResult.ok("has user role");

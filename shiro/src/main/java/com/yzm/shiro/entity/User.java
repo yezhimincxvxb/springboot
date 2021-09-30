@@ -46,6 +46,12 @@ public class User implements Serializable {
     @TableField("salt")
     private String salt;
 
+    /**
+     * 角色Id集合
+     */
+    @TableField("r_ids")
+    private String rIds;
+
     public String getCredentialsSalt() {
         return username + salt + salt;
     }

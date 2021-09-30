@@ -4,6 +4,7 @@ import com.yzm.security.constant.SysConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,7 @@ public class SecLoginFailureHandler extends SimpleUrlAuthenticationFailureHandle
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        log.info("登录失败");
+        log.info("登录失败：" + exception.getMessage());
         //HttpUtils.errorWrite(response,"login failure");
         response.sendRedirect(request.getContextPath() + SysConstant.LOGIN_PAGE + "?error");
     }

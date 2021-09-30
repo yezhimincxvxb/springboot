@@ -18,14 +18,16 @@ Realm:
 doGetAuthorizationInfo： 权限认证，即登录过后，每个身份不一定，对应的所能看的页面也不一样。
 doGetAuthenticationInfo：身份认证。即登录通过账号和密码验证登陆人的身份信息。
 
-### 常用的过滤器
-/admins/**=anon # 表示该 uri 可以匿名访问
-/admins/**=authc # 表示该 uri 需要认证才能访问
+### 常用的过滤器 DefaultFilter
+/admins/**=anon # 表示该 uri 可以匿名访问(等同于@RequiresGuest)
+/admins/**=authc # 表示该 uri 需要认证才能访问(等同于@RequiresAuthentication)
 /admins/**=authcBasic # 表示该 uri 需要 httpBasic 认证
-/admins/**=perms[user:add:*] # 表示该 uri 需要认证用户拥有 user:add:* 权限才能访问
+/admins/**=perms[user:add:*] # 表示该 uri 需要认证用户拥有 user:add:* 权限才能访问(等同于@RequiresPermissions)
 /admins/**=port[8081] # 表示该 uri 需要使用 8081 端口
 /admins/**=rest[user] # 相当于 /admins/**=perms[user:method]，其中，method 表示 get、post、delete 等
-/admins/**=roles[admin] # 表示该 uri 需要认证用户拥有 admin 角色才能访问
+/admins/**=roles[admin] # 表示该 uri 需要认证用户拥有 admin 角色才能访问(等同于@RequiresRoles)
 /admins/**=ssl # 表示该 uri 需要使用 https 协议
-/admins/**=user # 表示该 uri 需要认证或通过记住我认证才能访问
+/admins/**=user # 表示该 uri 需要认证或通过记住我认证才能访问(等同于@RequiresUser)
 /logout=logout # 表示注销,可以当作固定配置
+authc是认证过，user是登录过，如果开启了rememberMe功能的话，user是可以通过的，而authc通过不了。
+故我们用authc来校验一些关键操作，比如购买，我们可以采用user校验即可。而支付的时候，我们需要认证的用户，那就需要authc了。

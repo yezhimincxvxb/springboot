@@ -8,13 +8,12 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.PostConstruct;
 
 @Controller
 public class HomeController {
@@ -36,10 +35,10 @@ public class HomeController {
         return "Here is home page";
     }
 
-    @GetMapping("notRole")
+    @GetMapping("unauthorized")
     @ResponseBody
     public Object notRole() {
-        return "Here is notRole page";
+        return "Here is unauthorized page";
     }
 
     @PostMapping("doLogin")
@@ -56,6 +55,12 @@ public class HomeController {
             return "username error!";
         }
         return "SUCCESS";
+    }
+
+    @GetMapping(value = "/logout")
+    public ResponseEntity<Void> logout() {
+        SecurityUtils.getSubject().logout();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("register")

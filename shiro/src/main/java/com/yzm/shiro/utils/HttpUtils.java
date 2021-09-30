@@ -1,4 +1,4 @@
-package com.yzm.security.utils;
+package com.yzm.shiro.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -34,9 +34,13 @@ public class HttpUtils {
     }
 
     public static void errorWrite(HttpServletResponse response, String msg) throws IOException {
+        errorWrite(response, 500, msg);
+    }
+
+    public static void errorWrite(HttpServletResponse response, int code, String msg) throws IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
-        HttpResult result = HttpResult.error(msg);
+        HttpResult result = HttpResult.error(code, msg);
         response.getWriter().print(JSONObject.toJSONString(result, true));
         response.getWriter().flush();
         response.getWriter().close();

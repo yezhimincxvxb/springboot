@@ -20,8 +20,8 @@ import java.util.List;
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
 
     @Override
-    public List<Role> getRoles(Integer userid) {
-        return this.baseMapper.getRoles(userid);
+    public List<Role> getRoles(List<Integer> roleIds) {
+        return this.baseMapper.getRoles(roleIds);
     }
 
 }

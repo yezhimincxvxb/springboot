@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.yzm.shiro.entity.Permissions;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -15,6 +16,6 @@ import java.util.List;
  */
 public interface PermissionsService extends IService<Permissions> {
 
-    List<Permissions> getPermissions(List<Integer> roleIds);
+    List<Permissions> getPermissions(Set<Integer> permIds);
 
 }

@@ -1,14 +1,10 @@
-package com.yzm.security.config.sec;
+package com.yzm.security.config.sms;
 
-import com.yzm.security.utils.HttpUtils;
-import com.yzm.security.utils.JwtTokenUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -58,37 +54,40 @@ public class SecAuthenticateFilter extends UsernamePasswordAuthenticationFilter 
     }
 
     // 成功验证后调用的方法 如果验证成功，就生成token并返回
-    @Override
-    protected void successfulAuthentication(
-            HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain, Authentication authResult) throws IOException, ServletException {
-
-        // 登录成功之后，把认证后的 Authentication 对象存储到请求线程上下文，这样在授权阶段就可以获取到此认证信息进行访问控制判断
-        SecurityContextHolder.getContext().setAuthentication(authResult);
-
-        // 记住我服务
-        getRememberMeServices().loginSuccess(request, response, authResult);
-
-        // 触发事件监听器
-        if (this.eventPublisher != null) {
-            eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
-        }
-
-        // 生成并返回token给客户端，后续访问携带此token
-        HttpUtils.successWrite(response, JwtTokenUtils.generateToken(authResult));
-//        response.setHeader(JwtTokenUtils.TOKEN_HEADER, JwtTokenUtils.generateToken(authResult));
-
-        //重定向登录成功地址
-        //getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
-    }
+//    @Override
+//    protected void successfulAuthentication(
+//            HttpServletRequest request, HttpServletResponse response,
+//            FilterChain chain, Authentication authResult) throws IOException, ServletException {
+//
+//        // 登录成功之后，把认证后的 Authentication 对象存储到请求线程上下文，这样在授权阶段就可以获取到此认证信息进行访问控制判断
+//        SecurityContextHolder.getContext().setAuthentication(authResult);
+//
+//        // 记住我服务
+//        getRememberMeServices().loginSuccess(request, response, authResult);
+//
+//        // 触发事件监听器
+//        if (this.eventPublisher != null) {
+//            eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
+//        }
+//
+//        // 生成并返回token给客户端，后续访问携带此token
+//        HttpUtils.successWrite(response, JwtTokenUtils.generateToken(authResult));
+////        response.setHeader(JwtTokenUtils.TOKEN_HEADER, JwtTokenUtils.generateToken(authResult));
+//
+//        //重定向登录成功地址
+//        //getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
+//    }
 
     // 这是验证失败时候调用的方法
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        SecurityContextHolder.clearContext();
-        getRememberMeServices().loginFail(request, response);
-        HttpUtils.errorWrite(response, "authentication failed, reason: " + failed.getMessage());
-        //getFailureHandler().onAuthenticationFailure(request, response, failed);
-        //super.unsuccessfulAuthentication(request, response, failed);
-    }
+//    @Override
+//    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+//        SecurityContextHolder.clearContext();
+//        getRememberMeServices().loginFail(request, response);
+//        HttpUtils.errorWrite(response, "authentication failed, reason: " + failed.getMessage());
+//        //getFailureHandler().onAuthenticationFailure(request, response, failed);
+//        //super.unsuccessfulAuthentication(request, response, failed);
+//    }
+
+
+
 }

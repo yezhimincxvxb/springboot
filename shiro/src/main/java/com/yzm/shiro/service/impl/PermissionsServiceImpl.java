@@ -7,6 +7,7 @@ import com.yzm.shiro.service.PermissionsService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -20,7 +21,7 @@ import java.util.List;
 public class PermissionsServiceImpl extends ServiceImpl<PermissionsMapper, Permissions> implements PermissionsService {
 
     @Override
-    public List<Permissions> getPermissions(List<Integer> roleIds) {
-        return this.baseMapper.getPermissions(roleIds);
+    public List<Permissions> getPermissions(Set<Integer> permIds) {
+        return this.baseMapper.getPermissions(permIds);
     }
 }

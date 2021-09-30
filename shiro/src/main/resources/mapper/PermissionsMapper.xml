@@ -16,12 +16,12 @@
     </sql>
 
     <select id="getPermissions" resultMap="BaseResultMap">
-        select p.p_id, p.p_name, p.p_desc
-        from `permissions` p
-        left join role_perm rp on p.p_id = rp.p_id
-        where rp.r_id in
-        <foreach collection="roleIds" item="roleId" separator="," open="(" close=")">
-            #{roleId}
+        select
+        <include refid="Base_Column_List"/>
+        from `permissions`
+        where p_id in
+        <foreach collection="permIds" item="permId" separator="," open="(" close=")">
+            #{permId}
         </foreach>
     </select>
 

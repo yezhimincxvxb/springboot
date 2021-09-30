@@ -1,6 +1,8 @@
 package com.yzm.security.config;
 
 import com.yzm.security.constant.SysConstant;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -8,6 +10,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
+
+    /**
+     * 注入验证码servlet
+     * servlet可拦截指定url路径，添加自定义操作
+     */
+    @Bean
+    public ServletRegistrationBean<VerifyServlet> initServletRegistrationBean() {
+        return new ServletRegistrationBean<>(new VerifyServlet(),"/auth/getVerifyCode");
+    }
 
     /**
      * 添加视图控制器

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -16,6 +17,6 @@ import java.util.List;
  */
 public interface PermissionsMapper extends BaseMapper<Permissions> {
 
-    List<Permissions> getPermissions(@Param("roleIds") List<Integer> roleIds);
+    List<Permissions> getPermissions(@Param("permIds") Set<Integer> permIds);
 
 }

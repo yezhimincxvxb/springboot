@@ -26,6 +26,13 @@ https://blog.csdn.net/yuanlaijike/article/details/80249235
     SecurityContextRepository将SecurityContext存储起来，然后调用SecurityContextHolder.clearContext方法清理SecurityContext。
 注意：SecurityContext是一个和当前线程绑定的工具，在代码的任何地方都可以通过SecurityContextHolder.getContext()获取到登陆信息。
 
+    AbstractAuthenticationProcessingFilter#doFilter()
+--> UsernamePasswordAuthenticationFilter#attemptAuthentication()
+--> AuthenticationManager#authenticate() --> ProviderManager#authenticate()
+--> AuthenticationProvider#authenticate() --> AbstractUserDetailsAuthenticationProvider#authenticate()
+--> DaoAuthenticationProvider#retrieveUser() --> AbstractUserDetailsAuthenticationProvider#authenticate()
+--> AbstractAuthenticationProcessingFilter#doFilter()
+
 ### 授权流程
 1.当客户端向某个资源发起请求，请求到达FilterSecurityInterceptor，然后会调用其父类AbstractSecurityInterceptor的beforeInvocation方法做授权之前的准备工作
 2.在beforeInvocation法中通过SecurityMetadataSource…getAttributes(object);获得资源所需要的访问权限 ，

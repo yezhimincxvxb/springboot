@@ -1,4 +1,4 @@
-package com.yzm.security.config.sec;
+package com.yzm.security.config.sms;
 
 import com.yzm.security.utils.JwtTokenUtils;
 import io.jsonwebtoken.Claims;
