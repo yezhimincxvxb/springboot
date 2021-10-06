@@ -16,12 +16,23 @@ public class JwtToken implements HostAuthenticationToken {
         this.host = host;
     }
 
-    public String getToken(){
-        return this.token;
+    public String getToken() {
+        return token;
     }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Override
     public String getHost() {
         return host;
     }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
     @Override
     public Object getPrincipal() {
         return token;

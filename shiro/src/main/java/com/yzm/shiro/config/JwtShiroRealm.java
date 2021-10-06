@@ -11,7 +11,7 @@ import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.web.filter.authz.RolesAuthorizationFilter;
+import org.apache.shiro.util.ByteSource;
 
 public class JwtShiroRealm extends AuthorizingRealm {
 
@@ -36,17 +36,22 @@ public class JwtShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         JwtToken jwtToken = (JwtToken) authcToken;
         String token = jwtToken.getToken();
-        RolesAuthorizationFilter rolesAuthorizationFilter = new RolesAuthorizationFilter();
-        User user = userService.findUserByName(JwtUtils.getUsernameFromToken(token));
-        if (user == null)
-            throw new AuthenticationException("token过期，请重新登录");
 
-        return new SimpleAuthenticationInfo(user.getUsername(), user.getSalt(), getName());
+        String username = JwtUtils.getUsernameFromToken(token);
+        if (username == null) {
+            throw new AuthenticationException("token过期，请重新登录");
+        }
+
+        User user = userService.findUserByName(username);
+        if (user == null) {
+            throw new AuthenticationException("账号异常");
+        }
+
+        return new SimpleAuthenticationInfo(
+                user.getUsername(), token, ByteSource.Util.bytes(user.getCredentialsSalt()), getName());
     }
 
     @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        return null;
-    }
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) { return null; }
 
 }

@@ -1,8 +1,6 @@
-package com.yzm.shiro.config;
+package com.yzm.shiro.config.filter;
 
 import com.yzm.shiro.entity.JwtToken;
-import com.yzm.shiro.entity.User;
-import com.yzm.shiro.service.UserService;
 import com.yzm.shiro.utils.HttpUtils;
 import com.yzm.shiro.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +9,8 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
+import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
+import org.apache.shiro.web.filter.mgt.DefaultFilter;
 import org.apache.shiro.web.util.WebUtils;
 
 import javax.servlet.ServletRequest;
@@ -27,8 +27,8 @@ public class JwtAuthFilter extends AuthenticatingFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        if (this.isLoginRequest(request, response))
-            return true;
+        if (this.isLoginRequest(request, response)) return true;
+
         boolean allowed = false;
         try {
             allowed = executeLogin(request, response);
@@ -40,6 +40,23 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         return allowed || super.isPermissive(mappedValue);
     }
 
+    @Override
+    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
+        AuthenticationToken token = this.createToken(request, response);
+        if (token == null) {
+            String msg = "createToken method implementation returned null. A valid non-null AuthenticationToken must be created in order to execute a login attempt.";
+            throw new IllegalStateException(msg);
+        } else {
+            try {
+                Subject subject = this.getSubject(request, response);
+                subject.login(token);
+                return this.onLoginSuccess(token, subject, request, response);
+            } catch (AuthenticationException var5) {
+                return this.onLoginFailure(token, var5, request, response);
+            }
+        }
+    }
+
     /**
      * 这里重写了父类的方法，使用我们自己定义的Token类，提交给shiro。这个方法返回null的话会直接抛出异常，进入isAccessAllowed（）的异常处理逻辑。
      */
@@ -48,7 +65,6 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         String jwtToken = JwtUtils.getTokenFromRequest(WebUtils.toHttp(request));
         if (StringUtils.isNotBlank(jwtToken) && JwtUtils.verifyToken(jwtToken) != null)
             return new JwtToken(jwtToken);
-
         return null;
     }
 
@@ -66,14 +82,14 @@ public class JwtAuthFilter extends AuthenticatingFilter {
      */
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
-        HttpServletResponse httpResponse = WebUtils.toHttp(response);
         if (token instanceof JwtToken) {
+            HttpServletResponse httpResponse = WebUtils.toHttp(response);
             JwtToken jwtToken = (JwtToken) token;
             String tokenStr = jwtToken.getToken();
-            User user = (User) subject.getPrincipal();
             if (JwtUtils.verifyToken(tokenStr) == null) {
+                String username = (String) subject.getPrincipal();
                 Map<String, Object> map = new HashMap<>();
-                map.put(JwtUtils.USERNAME, user.getUsername());
+                map.put(JwtUtils.USERNAME, username);
                 tokenStr = JwtUtils.generateToken(map);
             }
             httpResponse.setHeader("token", tokenStr);

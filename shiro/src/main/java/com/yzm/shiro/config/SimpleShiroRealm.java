@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DbShiroRealm extends AuthorizingRealm {
+public class SimpleShiroRealm extends AuthorizingRealm {
 
     private final UserService userService;
     private final RoleService roleService;
     private final PermissionsService permissionsService;
 
-    public DbShiroRealm(UserService userService, RoleService roleService, PermissionsService permissionsService) {
+    public SimpleShiroRealm(UserService userService, RoleService roleService, PermissionsService permissionsService) {
         this.userService = userService;
         this.roleService = roleService;
         this.permissionsService = permissionsService;
@@ -80,13 +80,13 @@ public class DbShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
-        String username = token.getUsername();
+        UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) authenticationToken;
+        String username = usernamePasswordToken.getUsername();
         //String username = (String) authenticationToken.getPrincipal();
         //String password = new String((char[]) authenticationToken.getCredentials());
         User user = userService.findUserByName(username);
         if (user == null) {
-            return null;
+            throw new UnknownAccountException();
         }
 
         //存到session中

@@ -2,22 +2,29 @@ package com.yzm.shiro.controller;
 
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiresRoles("USER")
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/admin")
+public class AdminController {
 
     @GetMapping
-    public Object user() {
-        return "Welcome User";
+    public Object admin() {
+        return "Welcome admin";
     }
 
-    @RequiresPermissions("select")
+    @GetMapping("edit")
+    public Object edit() {
+        return "edit";
+    }
+
+    @GetMapping("remove")
+    public Object remove() {
+        return "remove";
+    }
+
     @GetMapping("select")
     public Object select() {
         return "Select";
@@ -35,7 +42,6 @@ public class UserController {
         return "Update Or Delete";
     }
 
-    @RequiresPermissions("delete")
     @GetMapping("delete")
     public Object delete() {
         return "Delete";
