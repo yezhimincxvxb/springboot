@@ -21,27 +21,17 @@ public class VerifyServlet extends HttpServlet {
     /**
      * 验证码图片的宽度。
      */
-    private int width = 100;
+    private final int width = 100;
 
     /**
      * 验证码图片的高度。
      */
-    private int height = 30;
+    private final int height = 30;
 
     /**
      * 验证码字符个数
      */
-    private int codeCount = 4;
-
-    /**
-     * 字体高度
-     */
-    private int fontHeight;
-
-    /**
-     * 干扰线数量
-     */
-    private int interLine = 16;
+    private final int codeCount = 4;
 
     /**
      * 第一个字符的x轴值，因为后面的字符坐标依次递增，所以它们的x轴值是codeX的倍数
@@ -52,6 +42,18 @@ public class VerifyServlet extends HttpServlet {
      * codeY ,验证字符的y轴值，因为并行所以值一样
      */
     private int codeY;
+
+    /**
+     * 字体高度
+     */
+    private int fontHeight;
+
+    /**
+     * 干扰线数量
+     */
+    private final int interLine = 12;
+
+
 
     /**
      * codeSequence 表示字符允许出现的序列值
@@ -65,27 +67,6 @@ public class VerifyServlet extends HttpServlet {
      */
     @Override
     public void init() throws ServletException {
-        // 从web.xml中获取初始信息
-        // 宽度
-        String strWidth = this.getInitParameter("width");
-        // 高度
-        String strHeight = this.getInitParameter("height");
-        // 字符个数
-        String strCodeCount = this.getInitParameter("codeCount");
-        // 将配置的信息转换成数值
-        try {
-            if (strWidth != null && strWidth.length() > 0) {
-                width = Integer.parseInt(strWidth);
-            }
-            if (strHeight != null && strHeight.length() > 0) {
-                height = Integer.parseInt(strHeight);
-            }
-            if (strCodeCount != null && strCodeCount.length() > 0) {
-                codeCount = Integer.parseInt(strCodeCount);
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
         //width-4 除去左右多余的位置，使验证码更加集中显示，减得越多越集中。
         //codeCount+1 等比分配显示的宽度，包括左右两边的空格
         codeX = (width - 4) / (codeCount + 1);
@@ -94,31 +75,26 @@ public class VerifyServlet extends HttpServlet {
         codeY = height - 7;
     }
 
-    /**
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws java.io.IOException
-     */
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
         // 定义图像buffer
         BufferedImage buffImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        // 获取Graphics对象,便于对图像进行各种绘制操作
         Graphics2D gd = buffImg.createGraphics();
-        // 将图像填充为白色
+
+        // 背景白色
         gd.setColor(Color.LIGHT_GRAY);
         gd.fillRect(0, 0, width, height);
-        // 创建字体，字体的大小应该根据图片的高度来定。
-        Font font = new Font("Times New Roman", Font.PLAIN, fontHeight);
-        // 设置字体。
-        gd.setFont(font);
+
+        // 设置字体，字体的大小应该根据图片的高度来定。
+        gd.setFont(new Font("Times New Roman", Font.PLAIN, fontHeight));
+
         // 画边框。
         gd.setColor(Color.BLACK);
         gd.drawRect(0, 0, width - 1, height - 1);
-        // 随机产生16条干扰线，使图象中的认证码不易被其它程序探测到。
-        gd.setColor(Color.gray);
 
-        // 创建一个随机数生成器类
+        // 随机产生干扰线，使图象中的认证码不易被其它程序探测到。
+        gd.setColor(Color.gray);
         Random random = new Random();
         for (int i = 0; i < interLine; i++) {
             int x = random.nextInt(width);
@@ -129,7 +105,7 @@ public class VerifyServlet extends HttpServlet {
         }
 
         // randomCode用于保存随机产生的验证码，以便用户登录后进行验证。
-        StringBuffer randomCode = new StringBuffer();
+        StringBuilder randomCode = new StringBuilder();
         int red, green, blue;
         // 随机产生codeCount数字的验证码。
         for (int i = 0; i < codeCount; i++) {
@@ -149,11 +125,12 @@ public class VerifyServlet extends HttpServlet {
         // 将四位数字的验证码保存到Session中。
         HttpSession session = request.getSession();
         session.setAttribute("validateCode", randomCode.toString());
+
         // 禁止图像缓存。
+        response.setContentType("image/jpeg");
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Cache-Control", "no-cache");
         response.setDateHeader("Expires", 0);
-        response.setContentType("image/jpeg");
 
         // 将图像输出到Servlet输出流中。
         ServletOutputStream sos = response.getOutputStream();

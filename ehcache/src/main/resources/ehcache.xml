@@ -12,25 +12,27 @@
 
     <!--
         name:缓存名称。
-        eternal:对象是否永久有效，一但设置了，timeout将不起作用。
-        maxElementsInMemory:内存最大缓存元素个数
-        maxElementsOnDisk：磁盘最大缓存元素个数。
+        eternal:对象是否永久有效，一但设置了，(timeToIdleSeconds、timeToLiveSeconds)将不起作用。
+        maxElementsOnDisk：磁盘最大缓存元素个数。0表示不限制
+        maxElementsInMemory:指定允许在内存中存放元素的最大数量。0表示不限制（已弃用，用maxEntriesLocalHeap代替）
+        maxEntriesLocalHeap：指定允许在内存中存放元素的最大数量，0表示不限制。
+        maxBytesLocalHeap：指定当前缓存能够使用的堆内存的最大字节数，其值的设置规则跟maxBytesLocalDisk是一样的。(但不能跟maxEntriesLocalHeap一起用)
         overflowToDisk:内存不足时，是否保存到磁盘
-        timeToIdleSeconds:空闲时间（单位：秒）。仅当eternal=false时有效，默认值是0，也就是可空闲时间无穷大。(创建开始计时，每次查询都会重新计时)
-        timeToLiveSeconds:存活时间（单位：秒）。仅当eternal=false时有效，默认值是0，也就是可存活时间无穷大。(创建开始计时，不会重新计时)
+        timeToIdleSeconds：单位是秒，表示一个元素所允许闲置的最大时间，也就是说一个元素在不被请求的情况下允许在缓存中待的最大时间。默认是0，表示不限制。
+        timeToLiveSeconds：单位是秒，表示无论一个元素闲置与否，其允许在Cache中存在的最大时间。默认是0，表示不限制。
         diskPersistent：是否缓存虚拟机重启期数据 Whether the disk store persists between restarts of the Virtual Machine. The default value is false.
         diskSpoolBufferSizeMB：这个参数设置DiskStore（磁盘缓存）的缓存区大小。默认是30MB。每个Cache都应该有自己的一个缓冲区。
         diskExpiryThreadIntervalSeconds：磁盘失效线程运行时间间隔，默认是120秒。(清理超过空闲、存活时间的缓存)
-        clearOnFlush：内存数量最大时是否清除。
+        clearOnFlush：boolean类型。表示在调用Cache的flush方法时是否要清空MemoryStore。默认为true。
         memoryStoreEvictionPolicy：当达到maxElementsInMemory限制时，Ehcache将会根据指定的策略去清理内存。默认策略是LRU（最近最少使用）。你可以设置为FIFO（先进先出）或是LFU（较少使用）。
             FIFO，first in first out，先进先出算法，即先放入缓存的先被移除；
-            LFU， Less Frequently Used，最久未使用算法，使用时间距离现在最久的那个被移除；
-            LRU， Least Recently Used，最近最少使用的，一定时间段内使用次数（频率）最少的那个被移除；
+            LFU， Less Frequently Used，一直以来最少被使用的，缓存的元素有一个hit属性，hit值最小的将会被清出缓存；
+            LRU， Least Recently Used，最近最少使用的，缓存的元素有一个时间戳，当缓存容量满了，而又需要腾出地方来缓存新的元素的时候，那么现有缓存元素中时间戳离当前时间最远的元素将被清出缓存；
     -->
     <!-- 默认缓存区 -->
     <defaultCache
             eternal="false"
-            maxElementsInMemory="1000"
+            maxEntriesLocalHeap="1000"
             overflowToDisk="true"
             maxElementsOnDisk="10000"
             diskPersistent="false"
@@ -42,7 +44,7 @@
     <cache
             name="user_cache"
             eternal="false"
-            maxElementsInMemory="100"
+            maxEntriesLocalHeap="100"
             overflowToDisk="true"
             maxElementsOnDisk="1000"
             diskPersistent="false"
