@@ -1,5 +1,7 @@
 package com.yzm.thread.cyclic_barrier;
 
+import org.apache.tomcat.util.threads.LimitLatch;
+
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -18,7 +20,7 @@ public class CountDownLatchDemo {
      */
     private static void demo_01() {
         final CountDownLatch latch = new CountDownLatch(3);
-
+        LimitLatch limit = new LimitLatch(1);
         Thread t1 = new Thread(getRunnable(latch), "t1");
         Thread t2 = new Thread(getRunnable(latch), "t2");
         Thread t3 = new Thread(getRunnable(latch), "t3");
