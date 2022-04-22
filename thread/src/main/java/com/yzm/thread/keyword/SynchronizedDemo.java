@@ -1,6 +1,6 @@
-package com.yzm.thread.sync;
+package com.yzm.thread.keyword;
 
-import java.util.concurrent.CountDownLatch;
+import lombok.SneakyThrows;
 
 public class SynchronizedDemo {
 

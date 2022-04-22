@@ -1,4 +1,4 @@
-package com.yzm.thread.volatile_;
+package com.yzm.thread.keyword;
 
 /**
  * 单例模式
