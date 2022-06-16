@@ -1,0 +1,35 @@
+###
+1.wait()的作用是让当前线程进入等待状态，同时，wait()也会让当前线程释放它所持有的锁。“直到其他线程调用此对象的
+notify() 方法或 notifyAll() 方法”，当前线程被唤醒(进入“就绪状态”)
+2.notify()和notifyAll()的作用，则是唤醒当前对象上的等待线程；notify()是唤醒单个线程，而notifyAll()是唤醒所有的线程。
+3.wait(long timeout)让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的notify()方法或 notifyAll() 方法，
+或者超过指定的时间量”，当前线程被唤醒(进入“就绪状态”)。
+
+###
+wait()、notify()和notifyAll()都需要在synchronized作用范围中使用
+因为wait()方法调用时，会释放线程获得的锁(也就是说当前线程必须持有锁)，wait()方法返回后，线程又会重新试图获得锁。
+
+###
+sleep是Thread的方法；wait是Object的方法
+sleep必须指定时间；wait可以指定也可以不用
+sleep可以在任意地方使用；wait在能synchronized范围内使用
+sleep释放CPU执行权，但不释放同步锁；wait释放CPU执行权，也释放同步锁，使得其他线程可以使用同步控制块或者方法。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -30,6 +30,8 @@
         <module>jwt</module>
         <module>oauth</module>
         <module>transactional</module>
+        <module>jdbc</module>
+        <module>thread</module>
         <module>utils</module>
     </modules>
 

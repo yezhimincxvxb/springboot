@@ -13,7 +13,18 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface AccountService extends IService<Account> {
 
-    void method01();
-    void method01_2();
+    void methodA1();
+
+    void methodA2();
+
+    void methodA3();
+
+    void methodA4();
+
+    void methodA5();
+
+    void methodA6();
+
+    void methodA7();
 
 }
