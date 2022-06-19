@@ -3,13 +3,15 @@ package com.yzm.utils.entity;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelCollection;
 import cn.afterturn.easypoi.excel.annotation.ExcelEntity;
+import com.yzm.utils.entity.base.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class Account {
+public class Account extends BaseEntity {
 
+    private static final long serialVersionUID = -4397818828657379097L;
     @Excel(name = "id", orderNum = "1")
     private Integer id;
 
@@ -22,8 +24,8 @@ public class Account {
     @Excel(name = "时间", format = "yyyy-MM-dd HH:mm:ss", orderNum = "4")
     private Date time;
 
-//    @ExcelEntity
-//    private User user;
+    @ExcelEntity
+    private User user;
 //
 //    @ExcelCollection(name = "用户集合", type = User.class)
 //    private List<User> users;
