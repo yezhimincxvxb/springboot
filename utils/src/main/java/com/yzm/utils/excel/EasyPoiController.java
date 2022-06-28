@@ -1,12 +1,16 @@
 package com.yzm.utils.excel;
 
 import com.google.common.collect.Lists;
+import com.yzm.utils.entity.*;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("easyPoi")
@@ -45,8 +49,10 @@ public class EasyPoiController {
         System.out.println(EasyPoiUtils.INSTANCE.exportExcel(UserA.class, Lists.newArrayList(userA)));
     }
 
-    public void importExcel(MultipartFile file) {
-
+    @PostMapping("importExcel")
+    public void importExcel(HttpServletRequest request, MultipartFile file) {
+        List<Student> students = EasyPoiUtils.INSTANCE.importExcel(file, 1, 2, Student.class);
+        students.forEach(System.out::println);
     }
 
 }
