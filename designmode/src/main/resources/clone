@@ -1,0 +1,535 @@
+Java 对象拷贝
+
+### 前提
+在实际编程过程中，我们常常要遇到这种情况：有一个对象A，在某一时刻A中已经包含了一些有效值，此时可能 会需要一个和A完全相同新对象B，并且此后对B任何改动都不会影响到A中的值，也就是说，A与B是两个独立的对象，但B的初始值是由A对象确定的。例如下面程序展示的情况：
+以下把String当成值类型使用(String 是引用类型却具有基本数据类型的特性)
+
+@Data
+public class Student {
+
+    private String name;
+
+    private Address address;
+
+    public static void main(String[] args) {
+        Student stu1 = new Student();
+        String name = "ABC";
+        Address address = new Address("深圳");
+        stu1.setName(name);
+        stu1.setAddress(address);
+
+        Student stu2 = stu1;
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+
+        // 修改
+        name = "abc";
+        stu1.setName(name);
+        address.setArName("广州");
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+    }
+}
+
+@Data
+class Address {
+    private String arName;
+    public Address(String arName) {
+        this.arName = arName;
+    }
+}
+
+打印：
+stu1 = Student(name=ABC, address=Address(arName=深圳))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+
+stu1 = Student(name=abc, address=Address(arName=广州))
+stu2 = Student(name=abc, address=Address(arName=广州))
+修改其中任意一个，另一个就会跟着改变，不是我们想要的
+
+为什么改变学生2的学号，学生1的学号也发生了变化呢？
+原因出在(stu2 = stu1) 这一句。该语句的作用是将stu1的引用赋值给stu2，
+这样，stu1和stu2指向内存堆中同一个对象。
+如图：
+
+
+那么，怎么能干干净净清清楚楚地复制一个对象呢。在 Java语言中，用简单的赋值语句是不能满足这种需求的。要满足这种需求有很多途径，
+（1）将A对象的值分别通过set方法加入B对象中；
+（2）通过重写java.lang.Object类中的方法clone()；
+（3）通过org.apache.commons中的工具类BeanUtils和PropertyUtils进行对象复制；
+（4）通过序列化实现对象的复制。
+
+### 01 set方法
+
+将A对象的值分别通过set方法加入B对象中，对属性逐个赋值，本实例为了演示简单就设置了一个属性：
+
+@Data
+public class Student {
+
+    private String name;
+
+    private Address address;
+
+    public static void main(String[] args) {
+        Student stu1 = new Student();
+        String name = "ABC";
+        Address address = new Address("深圳");
+        stu1.setName(name);
+        stu1.setAddress(address);
+
+        Student stu2 = new Student();
+        stu2.setName(stu1.getName());
+        stu2.setAddress(stu1.getAddress());
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+
+        // 修改
+        name = "abc";
+        stu1.setName(name);
+        address.setArName("广州");
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+    }
+}
+
+@Data
+class Address {
+    private String arName;
+    public Address(String arName) {
+        this.arName = arName;
+    }
+}
+
+打印：
+stu1 = Student(name=ABC, address=Address(arName=深圳))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+
+stu1 = Student(name=abc, address=Address(arName=广州))
+stu2 = Student(name=ABC, address=Address(arName=广州))
+值独立了，由于引用地址还是一样所以都会改变
+
+我们发现，属性少对属性逐个赋值还挺方便，但是属性多时，就需要一直get、set了，非常麻烦。
+
+### 02  重写java.lang.Object类中的方法clone()
+
+在Java语言中，数据类型分为值类型（基本数据类型）和引用类型，值类型包括int、double、byte、boolean、char等简单数据类型，引用类型包括类、接口、数组等复杂类型。浅克隆和深克隆的主要区别在于是否支持引用类型的成员变量的复制，下面将对两者进行详细介绍。
+
+
+### 02-1 浅克隆(值拷贝)
+
+1.被复制的类需要实现Clonenable接口（不实现的话在调用clone方法会抛出CloneNotSupportedException异常)， 该接口为标记接口(不含任何方法)
+2.覆盖clone()方法，访问修饰符设为public。方法中调用super.clone()方法得到需要的复制对象。
+
+@Data
+public class Student implements Cloneable {
+
+    private String name;
+
+    private Address address;
+
+    @Override
+    protected Object clone() {
+        Student student = null;
+        try {
+            student = (Student) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return student;
+    }
+
+    public static void main(String[] args) {
+        Student stu1 = new Student();
+        String name = "ABC";
+        Address address = new Address("深圳");
+        stu1.setName(name);
+        stu1.setAddress(address);
+
+        Student stu2 = (Student) stu1.clone();
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+
+        // 修改
+        name = "abc";
+        stu1.setName(name);
+        address.setArName("广州");
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+    }
+}
+
+@Data
+class Address {
+    private String arName;
+    public Address(String arName) {
+        this.arName = arName;
+    }
+}
+
+打印：
+stu1 = Student(name=ABC, address=Address(arName=深圳))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+
+stu1 = Student(name=abc, address=Address(arName=广州))
+stu2 = Student(name=ABC, address=Address(arName=广州))
+也是值独立，引用地址不变
+
+原因是浅复制只是复制了addr变量的引用，并没有真正的开辟另一块空间，将值复制后再将引用返回给新对象。
+
+在浅克隆中，如果原型对象的成员变量是值类型，将复制一份给克隆对象；如果原型对象的成员变量是引用类型，则将引用对象的地址复制一份给克隆对象，也就是说原型对象和克隆对象的成员变量指向相同的内存地址。
+
+简单来说，在浅克隆中，当对象被复制时只复制它本身和其中包含的值类型的成员变量，而引用类型的成员对象并没有复制。
+
+
+
+
+在Java语言中，通过覆盖Object类的clone()方法可以实现浅克隆。
+
+### 02-2 深克隆(值跟引用地址都拷贝)(想要的结果)
+
+为了达到真正的复制对象，而不是纯粹引用复制。我们需要将Address类可复制化，并且修改clone方法，如下：
+
+@Data
+public class Student implements Cloneable {
+
+    private String name;
+
+    private Address address;
+
+    @Override
+    protected Object clone() {
+        Student student = null;
+        try {
+            // 浅克隆
+            student = (Student) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        // 深克隆
+        student.address = (Address) address.clone();
+        return student;
+    }
+
+    public static void main(String[] args) {
+        Student stu1 = new Student();
+        String name = "ABC";
+        Address address = new Address("深圳");
+        stu1.setName(name);
+        stu1.setAddress(address);
+
+        Student stu2 = (Student) stu1.clone();
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+
+        // 修改
+        name = "abc";
+        stu1.setName(name);
+        address.setArName("广州");
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+    }
+}
+
+@Data
+class Address implements Cloneable {
+    private String arName;
+
+    public Address(String arName) {
+        this.arName = arName;
+    }
+
+    @Override
+    protected Object clone() {
+        Address address = null;
+        try {
+            address = (Address) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return address;
+    }
+}
+打印：
+stu1 = Student(name=ABC, address=Address(arName=深圳))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+
+stu1 = Student(name=abc, address=Address(arName=广州))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+值跟引用地址都独立了
+
+在深克隆中，无论原型对象的成员变量是值类型还是引用类型，都将复制一份给克隆对象，深克隆将原型对象的所有引用对象也复制一份给克隆对象。
+简单来说，在深克隆中，除了对象本身被复制外，对象所包含的所有成员变量也将复制。
+
+
+在Java语言中，如果需要实现深克隆，可以通过覆盖Object类的clone()方法实现，也可以通过序列化(Serialization)等方式来实现。
+
+（如果引用类型里面还包含很多引用类型，或者内层引用类型的类里面又包含引用类型，使用clone方法就会很麻烦。这时我们可以用序列化的方式来实现对象的深克隆。）
+
+### 03 使用BeanUtils.copyProperties (浅克隆)
+
+对值类型可以，对引用类型无效
+@Data
+public class Student {
+
+    private String name;
+
+    private Address address;
+
+    public static void main(String[] args) {
+        Student stu1 = new Student();
+        String name = "ABC";
+        Address address = new Address("深圳");
+        stu1.setName(name);
+        stu1.setAddress(address);
+
+        Student stu2 = new Student();
+        BeanUtils.copyProperties(stu1, stu2);
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+
+        // 修改
+        name = "abc";
+        stu1.setName(name);
+        address.setArName("广州");
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+    }
+
+}
+
+@Data
+class Address {
+
+    private String arName;
+
+    public Address(String arName) {
+        this.arName = arName;
+    }
+
+}
+
+打印：
+stu1 = Student(name=ABC, address=Address(arName=深圳))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+
+stu1 = Student(name=abc, address=Address(arName=广州))
+stu2 = Student(name=ABC, address=Address(arName=广州))
+值独立，引用关联
+
+### 04-1 序列化(深克隆)
+
+@Data
+public class Student implements Serializable {
+
+    private static final long serialVersionUID = -6734405403146222197L;
+
+    private String name;
+
+    private Address address;
+
+    public Student myClone() {
+        Student student = null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            // 将流序列化成对象
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            student = (Student) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return student;
+    }
+
+    public static void main(String[] args) {
+        Student stu1 = new Student();
+        String name = "ABC";
+        Address address = new Address("深圳");
+        stu1.setName(name);
+        stu1.setAddress(address);
+
+        Student stu2 = stu1.myClone();
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+
+        // 修改
+        name = "abc";
+        stu1.setName(name);
+        address.setArName("广州");
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+    }
+
+
+}
+
+@Data
+class Address implements Serializable {
+
+    private static final long serialVersionUID = -2698215001713407741L;
+
+    private String arName;
+
+    public Address(String arName) {
+        this.arName = arName;
+    }
+
+}
+
+打印：
+stu1 = Student(name=ABC, address=Address(arName=深圳))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+
+stu1 = Student(name=abc, address=Address(arName=广州))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+完全独立
+
+###  SerializationUtils.clone()工具类(深克隆)
+
+
+需要依赖：
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.0</version>
+</dependency>
+
+@Data
+public class Student implements Serializable {
+
+    private static final long serialVersionUID = 1102338993053233115L;
+
+    private String name;
+
+    private Address address;
+
+    public static void main(String[] args) {
+        Student stu1 = new Student();
+        String name = "ABC";
+        Address address = new Address("深圳");
+        stu1.setName(name);
+        stu1.setAddress(address);
+
+        Student stu2 = SerializationUtils.clone(stu1);
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+
+        // 修改
+        name = "abc";
+        stu1.setName(name);
+        address.setArName("广州");
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+    }
+
+}
+
+@Data
+public class Address implements Serializable {
+
+    private static final long serialVersionUID = -6168869665806062141L;
+
+    private String arName;
+
+    public Address(String arName) {
+        this.arName = arName;
+    }
+
+}
+
+打印：
+stu1 = Student(name=ABC, address=Address(arName=深圳))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+
+stu1 = Student(name=abc, address=Address(arName=广州))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+完全独立
+
+### 深拷贝和浅拷贝
+
+深拷贝
+
+    相当于创建了一个新的对象，只是这个对象的所有内容，都和被拷贝的对象一模一样而已，即两者的修改是隔离的，相互之间没有影响，完全独立
+
+浅拷贝
+    也是创建了一个对象，但是这个对象的某些内容（比如A）依然是被拷贝对象的，即通过这两个对象中任意一个修改A，两个对象的A都会受到影响
+    等同与新创建一个对象，然后使用=，将原对象的属性赋值给新对象的属性
+
+都需要实现Cloneable接口
+
+###  json转换方式(深克隆)
+
+
+需要依赖：
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.60</version>
+</dependency>
+
+@Data
+public class Student {
+
+    private String name;
+
+    private Address address;
+
+    public static void main(String[] args) {
+        Student stu1 = new Student();
+        String name = "ABC";
+        Address address = new Address("深圳");
+        stu1.setName(name);
+        stu1.setAddress(address);
+
+        String jsonString = JSON.toJSONString(stu1);
+        Student stu2 = JSON.parseObject(jsonString, Student.class);
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+
+        // 修改
+        name = "abc";
+        stu1.setName(name);
+        address.setArName("广州");
+
+        System.out.println("stu1 = " + stu1);
+        System.out.println("stu2 = " + stu2);
+    }
+
+}
+
+@Data
+public class Address {
+
+    private String arName;
+
+    public Address(String arName) {
+        this.arName = arName;
+    }
+
+}
+
+打印：
+stu1 = Student(name=ABC, address=Address(arName=深圳))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+
+stu1 = Student(name=abc, address=Address(arName=广州))
+stu2 = Student(name=ABC, address=Address(arName=深圳))
+完全独立
+
