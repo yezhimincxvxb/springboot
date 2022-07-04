@@ -1,12 +1,11 @@
-package com.yzm.utils.entity;
+package com.yzm.utils.excel.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import com.yzm.utils.entity.base.BaseEntity;
+import com.yzm.utils.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @Data

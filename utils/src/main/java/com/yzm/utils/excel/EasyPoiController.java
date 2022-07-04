@@ -1,7 +1,7 @@
 package com.yzm.utils.excel;
 
 import com.google.common.collect.Lists;
-import com.yzm.utils.entity.*;
+import com.yzm.utils.excel.entity.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

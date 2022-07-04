@@ -1,4 +1,4 @@
-package com.yzm.utils.entity.base;
+package com.yzm.utils.base;
 
 import java.io.Serializable;
 

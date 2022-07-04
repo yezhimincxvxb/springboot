@@ -1,4 +1,4 @@
-package com.yzm.utils.entity;
+package com.yzm.utils.excel.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelTarget;

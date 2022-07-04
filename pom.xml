@@ -33,6 +33,7 @@
         <module>jdbc</module>
         <module>thread</module>
         <module>utils</module>
+        <module>designmode</module>
     </modules>
 
     <properties>
