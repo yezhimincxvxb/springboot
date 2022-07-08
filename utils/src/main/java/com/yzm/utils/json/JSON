@@ -1,0 +1,30 @@
+### 依赖
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.62</version>
+</dependency>
+
+###字符
+{} 双括号表示对象
+[] 中括号表示数组
+"" 双引号内是属性或值
+: 冒号表示后者是前者的值(这个值可以是字符串、数字、也可以是另一个数组或对象)
+{"name": "Michael"} 可以理解为是一个包含name为Michael的对象
+[{"name": "Michael"},{"name": "Jerry"}]就表示包含两个对象的数组
+{"name":["Michael","Jerry"]}这是一个拥有一个name数组的对象
+
+
+###JSON常用方法
+public static final Object parse(String text); // 把JSON文本parse为JSONObject或者JSONArray
+public static final JSONObject parseObject(String text)； // 把JSON文本parse成JSONObject
+public static final <T> T parseObject(String text, Class<T> clazz); // 把JSON文本parse为JavaBean
+public static final JSONArray parseArray(String text); // 把JSON文本parse成JSONArray
+public static final <T> List<T> parseArray(String text, Class<T> clazz); //把JSON文本parse成JavaBean集合
+public static final String toJSONString(Object object); // 将JavaBean序列化为JSON文本
+public static final String toJSONString(Object object, boolean prettyFormat); // 将JavaBean序列化为带格式的JSON文本
+public static final Object toJSON(Object javaObject); //将JavaBean转换为JSONObject或者JSONArray。
+
+###JSONObject
+
+###JSONArray

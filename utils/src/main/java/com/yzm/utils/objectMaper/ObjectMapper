@@ -1,0 +1,9 @@
+### 概述
+是一个使用 Swift 语言编写的数据模型转换框架，我们可以方便的将模型对象转换为JSON，或者JSON生成相应的模型类
+
+### 依赖
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+</dependency>
+
