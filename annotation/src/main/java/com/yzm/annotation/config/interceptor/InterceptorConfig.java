@@ -53,10 +53,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
         resolvers.add(new UserIdMethodArgumentResolver());
     }
 
-    @Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
-        configurer.enable("defaultServletName");
-    }
+//    @Override
+//    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+//        configurer.enable();
+//        configurer.enable("defaultServletName");
+//    }
 
 }
