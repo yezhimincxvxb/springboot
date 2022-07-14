@@ -1,6 +1,22 @@
 package com.yzm.designmode.C建造者模式Builder;
 
-public class BUser {
+/**
+ * Builder 模式定义:
+ * 将一个复杂对象的构建与它的表示分离,使得同样的构建过程可以创建不同的表示.
+ */
+public class BuilderClient {
+
+    public static void main(String[] args) {
+        //通过调用static静态方法创建内部类实例
+        BUser user = BUser.builder("yzm","123456").nickName("一枝梅").height(170).weight(120).build();
+        System.out.println("user = " + user);
+        //通过new 外部类.内部类方式创建内部类实例
+        BUser user1 = new BUser.Builder("admin", "admin").nickName("管理员").height(180).weight(150).build();
+        System.out.println("user1 = " + user1);
+    }
+}
+
+class BUser {
 
     //required：必填
     private final String username;
@@ -11,6 +27,7 @@ public class BUser {
     private final int height;
     private final int weight;
 
+    //不对外提供创建实例对象，必须通过建造者创建
     private BUser(Builder builder){
         this.username = builder.username;
         this.password = builder.password;
@@ -63,6 +80,7 @@ public class BUser {
         private int height;
         private int weight;
 
+        //必填参数通过构造器强制要求赋值
         public Builder(String username, String password) {
             this.username = username;
             this.password = password;
