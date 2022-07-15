@@ -9,7 +9,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 
-public class CloneDemo {
+public class CloneToolsClient {
 
     public static void main(String[] args) {
 //        test01();

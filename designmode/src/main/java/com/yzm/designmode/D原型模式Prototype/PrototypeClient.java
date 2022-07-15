@@ -3,8 +3,12 @@ package com.yzm.designmode.D原型模式Prototype;
 /**
  * 原型模式定义:
  * 用原型实例指定创建对象的种类,并且通过拷贝这些原型创建新的对象
+ *
+ * 原型模式是一个创建型的模式。原型二字表明了改模式应该有一个样板实例，用户从这个样板对象中复制一个内部属性一致的对象，
+ * 这个过程也就是我们称的“克隆”。被复制的实例就是我们所称的“原型”，这个原型是可定制的。
+ * 原型模式多用于创建复杂的或者构造耗时的实例，因为这种情况下，复制一个已经存在的实例可使程序运行更高效。
  */
-public class PrototypeDemo {
+public class PrototypeClient {
 
     public static void main(String[] args) {
         try {

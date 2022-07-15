@@ -1,6 +1,6 @@
 package com.yzm.designmode.D原型模式Prototype;
 
-public class DeepCloneDemo {
+public class DeepCloneClient {
 
     public static void main(String[] args) {
         try {
@@ -80,6 +80,9 @@ class MyPrototype2 implements Cloneable {
     }
 }
 
+/**
+ * 引用类型字段也实现 Cloneable 接口
+ */
 class MyPro2 implements Cloneable {
     private String desc;
 

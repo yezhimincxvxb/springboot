@@ -2,7 +2,7 @@ package com.yzm.designmode.D原型模式Prototype;
 
 import java.io.*;
 
-public class SerializableDemo {
+public class SerializableClient {
 
     public static void main(String[] args) {
         MyPro3 pro = new MyPro3("管理员");
@@ -21,6 +21,10 @@ public class SerializableDemo {
 
 }
 
+/**
+ * 深克隆
+ * 实现序列化 Serializable 接口
+ */
 class MyPrototype3 implements Serializable {
 
     private static final long serialVersionUID = 1526132947243545151L;
@@ -87,6 +91,9 @@ class MyPrototype3 implements Serializable {
     }
 }
 
+/**
+ * 引用类型字段也需要实现序列化接口
+ */
 class MyPro3 implements Serializable {
     private static final long serialVersionUID = -8067861151689905693L;
     private String desc;
