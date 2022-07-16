@@ -5,24 +5,28 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * CGLIB动态代理
  * Jdk的动态代理依靠接口实现，如果有些类并没有实现接口，则不能使用jdk代理，这就要用到CGLIB代理了。
  * CGLIB是针对类来实现的，他的原理是对指定的目标类生成一个子类，并覆盖其中方法实现增强，但因为采用的是继承，所以不能对final修饰的类进行代理。
  */
-public class CGLIBDynamicProxyDemo {
+public class CGLIBDynamicProxyClient {
 
     public static void main(String[] args) {
         ProxyCglib proxy = new ProxyCglib(new RealSubjectCglib());
         RealSubjectCglib subjectCglib = (RealSubjectCglib) proxy.getInstance();
-        String operate = subjectCglib.operate();
+        String operate = subjectCglib.operate("小马");
         System.out.println("operate = " + operate);
     }
 }
 
+/**
+ * 实现 MethodInterceptor 接口
+ */
 class ProxyCglib implements MethodInterceptor {
-    private Object targetObject;
+    private final Object targetObject;
 
     public ProxyCglib(Object targetObject) {
         this.targetObject = targetObject;
@@ -41,6 +45,7 @@ class ProxyCglib implements MethodInterceptor {
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         System.out.println("调用方法名：" +method.getName());
+        System.out.println("方法参数：" + Arrays.toString(args));
         Object object = proxy.invokeSuper(obj, args);
         System.out.println("返回结果：" + object);
         return object;
@@ -51,7 +56,7 @@ class ProxyCglib implements MethodInterceptor {
  * 目标对象
  */
 class RealSubjectCglib  {
-    public String operate() {
+    public String operate(String name) {
         return "RealSubjectCglib ";
     }
 }

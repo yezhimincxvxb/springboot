@@ -11,41 +11,53 @@ package com.yzm.designmode.E适配器模式Adapter;
  */
 public class ClassAdapterClient {
     public static void main(String[] args) {
-        Target target = new ConcreteAdapter();
-        target.request_220V();
+        //保留原有功能
+        Target target = new ConcreteTarget();
+        target.request();
+
+        //又能增加新功能
+        Target adapter = new ConcreteAdapter();
+        adapter.request();
     }
 }
 
 /**
- * 目标接口
+ * 目标接口、标准接口
+ * 已有的
  */
 interface Target {
-    void request_220V();
+    void request();
 }
 
 /**
- * 被适配者
+ * 已有具体目标类，只提供普通功能
+ * 已有的
  */
-class Adaptee {
-    int v = 20;
-
-    void request_20V() {
-        System.out.println("支持电压(伏特)：" + v);
+class ConcreteTarget implements Target {
+    public void request() {
+        System.out.println("原有实现类 具有 普通功能...");
     }
 }
 
 /**
- * 适配者，继承被适配者并且实现目标接口
- * 起到适配、包装、转换的作用
+ * 被适配者类，具有特殊功能、但不符合我们既有的标准接口(不能通过Target调用)
+ * 已有的
+ */
+class Adaptee {
+    public void specificRequest() {
+        System.out.println("原有被适配类 具有 特殊功能...");
+    }
+}
+
+/**
+ * 新增适配者
+ * 通过继承被适配者并且实现目标接口，使得可以通过Target调用具有特殊功能的被适配者类
  */
 class ConcreteAdapter extends Adaptee implements Target {
 
     @Override
-    public void request_220V() {
-        //原来支持的
-        request_20V();
-
-        v = v * 11;
-        System.out.println("经转换后可支持电压(伏特)：" + v);
+    public void request() {
+        System.out.println("新增适配类，使目标接口可以调用被适配者类");
+        specificRequest();
     }
 }
