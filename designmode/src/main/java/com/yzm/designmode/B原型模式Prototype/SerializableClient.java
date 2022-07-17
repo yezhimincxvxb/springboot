@@ -1,4 +1,4 @@
-package com.yzm.designmode.D原型模式Prototype;
+package com.yzm.designmode.B原型模式Prototype;
 
 import java.io.*;
 

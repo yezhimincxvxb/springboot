@@ -1,4 +1,4 @@
-package com.yzm.designmode.C建造者模式Builder;
+package com.yzm.designmode.D建造者模式Builder;
 
 /**
  * Builder 模式定义:

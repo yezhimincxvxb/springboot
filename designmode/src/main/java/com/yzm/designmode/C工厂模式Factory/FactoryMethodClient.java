@@ -1,4 +1,4 @@
-package com.yzm.designmode.B工厂模式Factory;
+package com.yzm.designmode.C工厂模式Factory;
 
 /**
  * 工厂方法模式
