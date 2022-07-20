@@ -1,176 +1,232 @@
 package com.yzm.designmode.CreateMode创建型模式.Builder建造者模式;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * 建造者模式 与 工厂模式
- *
- * 工厂模式: 重点是获取实例对象
- * 作用：实现了创建者和调用者的分离。
- * 意义：将实例化对象的代码提取出来，放到一个类(工厂类)中统一管理和维护，达到和主项目的依赖关系的解耦。从而提高项目的扩展和维护性。
- * 分类：简单工厂模式、工厂方法模式、抽象工厂模式
- *
- * 建造者模式: 可以根据不同的行为(调用顺序)构建实例对象
- * 将一个复杂对象的构建与它的表示分离,使得同样的构建过程可以创建不同的表示.
+ * 建造者模式（Builder Pattern）使用多个简单的对象一步一步构建成一个复杂的对象。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。
+ * 一个 Builder 类会一步一步构造最终的对象。该 Builder 类是独立于其他对象的。
+ * <p>
+ * 意图：将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。
+ * 主要解决：主要解决在软件系统中，有时候面临着"一个复杂对象"的创建工作，其通常由各个部分的子对象用一定的算法构成；
+ * 由于需求的变化，这个复杂对象的各个部分经常面临着剧烈的变化，但是将它们组合在一起的算法却相对稳定。
+ * 何时使用：一些基本部件不会变，而其组合经常变化的时候。
+ * 如何解决：将变与不变分离开。
+ * 关键代码：建造者：创建和提供实例，导演：管理建造出来的实例的依赖关系。
+ * 应用实例： 1、去肯德基，汉堡、可乐、薯条、炸鸡翅等是不变的，而其组合是经常变化的，生成出所谓的"套餐"。 2、JAVA 中的 StringBuilder。
+ * 优点： 1、建造者独立，易扩展。 2、便于控制细节风险。
+ * 缺点： 1、产品必须有共同点，范围有限制。 2、如内部变化复杂，会有很多的建造类。
+ * 使用场景： 1、需要生成的对象具有复杂的内部结构。 2、需要生成的对象内部属性本身相互依赖。
+ * 注意事项：与工厂模式的区别是：建造者模式更加关注与零件装配的顺序。
  */
 public class BuilderClient {
     public static void main(String[] args) {
-        //主导者跟生产商建立联系
-        Builder builder = new ConcreteBuilder();
-        Director director = new Director(builder);
+        System.out.println("套餐一");
+        OrderDirector director = new OrderDirector();
+        Order packageA = director.packageA();
+        packageA.showItems();
+        System.out.println("总价: " + packageA.getTotal());
 
-        //通知生产商，生产产品
-        Product grape = director.grape();
-        System.out.println(grape);
         System.out.println();
-
-        Product raisin = director.raisin();
-        System.out.println(raisin);
-        System.out.println();
-
-        Product grapeJuice = director.grapeJuice();
-        System.out.println(grapeJuice);
-        System.out.println();
-
-        Product wine = director.wine();
-        System.out.println(wine);
+        System.out.println("套餐二");
+        Order packageB = director.packageB();
+        packageB.showItems();
+        System.out.println("总价: " + packageB.getTotal());
     }
 }
 
 /**
- * 建造者（生产商）角色
+ * 步骤 1
+ * 食品(物品)超类
  */
-abstract class Builder {
-    Product product = new Product();;
+interface Item {
+    String name();
 
-    abstract void grape();
+    float price();
 
-    abstract void raisin();
+    Packing packing();
+}
 
-    abstract void airDry();
+/**
+ * 步骤 2
+ * 包装方式主要分两种
+ * 主食用纸盒包装
+ * 饮料用杯子装
+ */
+interface Packing {
+    String pack();
+}
 
-    abstract void grapeJuice();
+class Carton implements Packing {
 
-    abstract void juicing();
+    @Override
+    public String pack() {
+        return "纸盒";
+    }
+}
 
-    abstract void wine();
+class Cup implements Packing {
 
-    abstract void yeast();
-
-    Product getResult() {
-        return product;
+    @Override
+    public String pack() {
+        return "杯子";
     }
 }
 
 /**
- * 具体生产细节（工序）
+ * 步骤 3
+ * 主食：汉堡、鸡肉卷、三明治
  */
-class ConcreteBuilder extends Builder {
+abstract class StapleFood implements Item {
 
     @Override
-    public void grape() {
-        System.out.println("直接出售");
-        product.setName("葡萄");
-        product.setPrice(10.0D);
+    public Packing packing() {
+        return new Carton();
     }
 
     @Override
-    public void raisin() {
-        product.setName("葡萄干");
-    }
-
-    @Override
-    public void airDry() {
-        System.out.println("风干");
-        product.setPrice(product.getPrice() + 12.0D);
-    }
-
-    @Override
-    public void grapeJuice() {
-        product.setName("葡萄汁");
-    }
-
-    @Override
-    public void juicing() {
-        System.out.println("榨汁");
-        product.setPrice(product.getPrice() + 7.0D);
-    }
-
-    @Override
-    public void wine() {
-        product.setName("葡萄酒");
-    }
-
-    @Override
-    public void yeast() {
-        System.out.println("发酵");
-        product.setPrice(product.getPrice() + 110.0D);
-    }
-
+    public abstract float price();
 }
 
-/**
- * 主导者角色，该角色不是必须的
- * 决定售卖后，通知生产商
- */
-class Director {
-    private final Builder builder;
+class Hamburger extends StapleFood {
 
-    public Director(Builder builder) {
-        this.builder = builder;
+    @Override
+    public String name() {
+        return "汉堡";
     }
 
-    public Product grape() {
-        builder.grape();
-        return builder.getResult();
+    @Override
+    public float price() {
+        return 20.0F;
+    }
+}
+
+class ChickenRolls extends StapleFood {
+
+    @Override
+    public String name() {
+        return "鸡肉卷";
     }
 
-    public Product raisin() {
-        builder.raisin();
-        builder.airDry();
-        return builder.getResult();
+    @Override
+    public float price() {
+        return 25.0F;
+    }
+}
+
+class Sandwich extends StapleFood {
+
+    @Override
+    public String name() {
+        return "三明治";
     }
 
-    public Product grapeJuice() {
-        builder.grapeJuice();
-        builder.juicing();
-        return builder.getResult();
-    }
-
-    public Product wine() {
-        builder.wine();
-        builder.juicing();
-        builder.yeast();
-        return builder.getResult();
+    @Override
+    public float price() {
+        return 15.0F;
     }
 }
 
 /**
- * 产品类
+ * 步骤 4
+ * 饮料：可乐、果汁
  */
-class Product {
-    private String name;
-    private double price;
+abstract class Drinks implements Item {
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
+    @Override
+    public Packing packing() {
+        return new Cup();
     }
 
     @Override
-    public String toString() {
-        return "Product{" +
-                "name='" + name + '\'' +
-                ", price=" + price +
-                '}';
+    public abstract float price();
+}
+
+class Cola extends Drinks {
+
+    @Override
+    public String name() {
+        return "可乐";
+    }
+
+    @Override
+    public float price() {
+        return 7.0F;
+    }
+}
+
+class Juice extends Drinks {
+
+    @Override
+    public String name() {
+        return "果汁";
+    }
+
+    @Override
+    public float price() {
+        return 6.0F;
+    }
+}
+
+/**
+ * 订单
+ */
+class Order {
+    private final List<Item> items = new ArrayList<>();
+
+    public void addItem(Item item) {
+        items.add(item);
+    }
+
+    public float getTotal() {
+        float cost = 0.0f;
+        for (Item item : items) {
+            cost += item.price();
+        }
+        return cost;
+    }
+
+    public void showItems() {
+        for (Item item : items) {
+            System.out.print("物品 : " + item.name());
+            System.out.print(", 价格 : " + item.price());
+            System.out.println(", Packing : " + item.packing().pack());
+        }
+    }
+}
+
+/**
+ * 建造者角色
+ */
+class OrderBuilder {
+    private final Order order = new Order();
+
+    public void addItem(Item item) {
+        order.addItem(item);
+    }
+
+    public Order build() {
+        return order;
+    }
+}
+
+/**
+ * 主导者角色
+ */
+class OrderDirector {
+
+    public Order packageA() {
+        OrderBuilder builder = new OrderBuilder();
+        builder.addItem(new Hamburger());
+        builder.addItem(new Cola());
+        return builder.build();
+    }
+
+    public Order packageB() {
+        OrderBuilder builder = new OrderBuilder();
+        builder.addItem(new ChickenRolls());
+        builder.addItem(new Sandwich());
+        builder.addItem(new Juice());
+        return builder.build();
     }
 }

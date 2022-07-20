@@ -185,7 +185,7 @@ enum ProduceType2 {
     PANTS("com.yzm.designmode.CreateMode创建型模式.Factory工厂模式.PantsProduce"),
     SHOE("com.yzm.designmode.CreateMode创建型模式.Factory工厂模式.ShoeProduce");
 
-    private String className;
+    private final String className;
 
     ProduceType2(String className) {
         this.className = className;
@@ -204,8 +204,8 @@ enum EnumFactory {
     PANTS(new PantsProduce(), "PANTS"),
     SHOE(new ShoeProduce(), "SHOE");
 
-    private Produce produce;
-    private String name;
+    private final Produce produce;
+    private final String name;
 
     EnumFactory(Produce produce, String name) {
         this.produce = produce;
