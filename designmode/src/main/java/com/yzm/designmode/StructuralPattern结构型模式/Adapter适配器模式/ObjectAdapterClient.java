@@ -5,59 +5,101 @@ package com.yzm.designmode.StructuralPattern结构型模式.Adapter适配器模�
  */
 public class ObjectAdapterClient {
     public static void main(String[] args) {
-        //保留原有功能
-        Target2 target2 = new ConcreteTarget2();
-        target2.request();
+        //原有功能
+        Computer computer = new ConcreteComputer();
+        SDCard sd = new SDCardImpl();
+        computer.readSD(sd);
+        System.out.println();
 
-        Target2 adapter2 = new ConcreteAdapter2(new Adaptee2());
-        adapter2.request();
+        //适配功能
+        TFCard tf = new TFCardImpl();
+        SDCard adapt = new SDAdapterTF(tf);
+        computer.readSD(adapt);
     }
 
 }
 
 /**
- * 目标接口、标准接口
- * 已有的
+ * 步骤 1 已有功能不可修改
+ * SD卡的接口，模拟计算机读取SD卡
  */
-interface Target2 {
-    void request();
+interface SDCard {
+    //读取SD卡方法
+    void readSD();
+
+    //写入SD卡功能
+    void writeSD(String msg);
 }
 
-/**
- * 已有具体目标类，只提供普通功能
- * 已有的
- */
-class ConcreteTarget2 implements Target2 {
-    public void request() {
-        System.out.println("原有实现类 具有 普通功能...");
-    }
-}
-
-/**
- * 被适配者类，具有特殊功能、但不符合我们既有的标准接口(不能通过Target调用)
- * 已有的
- */
-class Adaptee2 {
-    public void specificRequest() {
-        System.out.println("原有被适配类 具有 特殊功能...");
-    }
-}
-
-/**
- * 新增适配者
- * 实现目标接口并且注入被适配者对象，使得可以通过Target调用具有特殊功能的被适配者类
- */
-class ConcreteAdapter2 implements Target2 {
-
-    private final Adaptee2 adaptee2;
-
-    public ConcreteAdapter2(Adaptee2 adaptee2) {
-        this.adaptee2 = adaptee2;
+class SDCardImpl implements SDCard {
+    @Override
+    public void readSD() {
+        System.out.println("读取SD卡");
     }
 
     @Override
-    public void request() {
-        System.out.println("新增适配类，使目标接口可以调用被适配者类");
-        adaptee2.specificRequest();
+    public void writeSD(String msg) {
+        System.out.println("写入SD卡");
+    }
+}
+
+/**
+ * 步骤 2 已有功能不可修改
+ * 计算机接口，计算机提供读取SD卡方法：
+ */
+interface Computer {
+    void readSD(SDCard sdCard);
+}
+
+class ConcreteComputer implements Computer {
+    @Override
+    public void readSD(SDCard sdCard) {
+        sdCard.readSD();
+    }
+}
+
+/**
+ * 步骤 3 已有功能不可修改 被适配角色
+ * 读取TF卡
+ */
+interface TFCard {
+    void readTF();
+
+    void writeTF(String msg);
+}
+
+class TFCardImpl implements TFCard {
+    @Override
+    public void readTF() {
+        System.out.println("读取TF卡");
+    }
+
+    @Override
+    public void writeTF(String msg) {
+        System.out.println("写入TF卡");
+    }
+}
+
+/**
+ * 步骤 4 适配器角色
+ * 已知计算机可以读取SD卡，在不改变计算机代码的情况下，要使计算机可以读取TF卡，那就需要将SD卡和TF卡进行兼容
+ */
+class SDAdapterTF implements SDCard {
+    private final TFCard tfCard;
+
+    public SDAdapterTF(TFCard tfCard) {
+        this.tfCard = tfCard;
+    }
+
+    @Override
+    public void readSD() {
+        System.out.println("适配器：兼容SD卡和TF卡 ");
+        tfCard.readTF();
+    }
+
+    @Override
+    public void writeSD(String msg) {
+        System.out.println("适配器：兼容SD卡和TF卡 ");
+        tfCard.writeTF(msg);
     }
 }

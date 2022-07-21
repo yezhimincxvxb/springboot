@@ -169,7 +169,7 @@ class Juice extends Drinks {
 }
 
 /**
- * 订单
+ * 实体角色
  */
 class Order {
     private final List<Item> items = new ArrayList<>();

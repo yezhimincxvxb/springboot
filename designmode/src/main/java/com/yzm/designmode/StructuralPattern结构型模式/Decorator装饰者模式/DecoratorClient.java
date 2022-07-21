@@ -23,22 +23,29 @@ public class DecoratorClient {
     public static void main(String[] args) {
         Coffee blackCoffee = new BlackCoffee();
         Coffee whiteCoffee = new WhiteCoffee();
+        //原味
+        System.out.println(blackCoffee.description() + " 价格：" + blackCoffee.price());
+        System.out.println(whiteCoffee.description() + " 价格：" + whiteCoffee.price());
+        System.out.println();
 
+        //加奶
         Coffee milk = new Milk(blackCoffee);
-        Coffee sugar = new Sugar(blackCoffee);
-        System.out.println(milk.description() + " 价格：" + milk.price());
-        System.out.println(sugar.description() + " 价格：" + sugar.price());
-
         Coffee milk2 = new Milk(whiteCoffee);
-        Coffee sugar2 = new Sugar(whiteCoffee);
+        System.out.println(milk.description() + " 价格：" + milk.price());
         System.out.println(milk2.description() + " 价格：" + milk2.price());
+        System.out.println();
+
+        //加糖
+        Coffee sugar = new Sugar(blackCoffee);
+        Coffee sugar2 = new Sugar(whiteCoffee);
+        System.out.println(sugar.description() + " 价格：" + sugar.price());
         System.out.println(sugar2.description() + " 价格：" + sugar2.price());
     }
 }
 
 /**
+ * 步骤 1
  * 装饰的主体 咖啡
- * 接口，规范准备接收增强功能的类
  */
 interface Coffee {
     //商品描述
@@ -50,7 +57,7 @@ interface Coffee {
 
 /**
  * 装饰主体的具体类型 咖啡种类 白咖啡黑咖啡
- * 准备接收增强功能的类
+ * 未装饰，原味
  */
 class BlackCoffee implements Coffee {
     String description = "黑咖啡";
@@ -83,7 +90,7 @@ class WhiteCoffee implements Coffee {
 }
 
 /**
- * 装饰者：规范新增功能的类
+ * 步骤 2 装饰者角色
  */
 abstract class CoffeeDecorator implements Coffee {
     protected String description;
@@ -101,10 +108,10 @@ abstract class CoffeeDecorator implements Coffee {
 }
 
 /**
- * 装饰者的具体实现(新增功能)：加牛奶、加糖、加冰等
+ * 装饰者的具体实现：加牛奶、加糖、加冰等
+ * 装饰后，口感更好
  */
 class Milk extends CoffeeDecorator {
-
     public Milk(Coffee coffee) {
         super(coffee);
         this.description = "加牛奶";
@@ -123,7 +130,6 @@ class Milk extends CoffeeDecorator {
 }
 
 class Sugar extends CoffeeDecorator {
-
     public Sugar(Coffee coffee) {
         super(coffee);
         this.description = "加糖";
