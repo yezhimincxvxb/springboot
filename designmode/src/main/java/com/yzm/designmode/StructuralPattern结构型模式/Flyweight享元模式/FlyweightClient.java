@@ -22,18 +22,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * String字符串常量池
  * Integer-128到127的缓存
  */
-public class FlyweightDemo {
+public class FlyweightClient {
     public static void main(String[] args) {
-        IFlyweight flyweight1 = FlyweightFactory.getFlyweight("aa");
-        IFlyweight flyweight2 = FlyweightFactory.getFlyweight("aa");
-        IFlyweight flyweight3 = FlyweightFactory.getFlyweight("cc");
-        flyweight1.operation(new UnsharedConcreteFlyweight("www"));
-        flyweight2.operation(new UnsharedConcreteFlyweight("xxx"));
-        flyweight3.operation(new UnsharedConcreteFlyweight("yyy"));
+        IFlyweight flyweight1 = FlyweightFactory.getFlyweight("A");
+        IFlyweight flyweight2 = FlyweightFactory.getFlyweight("A");
+        IFlyweight flyweight3 = FlyweightFactory.getFlyweight("B");
+        flyweight1.operation(new UnsharedConcreteFlyweight("1"));
+        flyweight2.operation(new UnsharedConcreteFlyweight("2"));
+        flyweight3.operation(new UnsharedConcreteFlyweight("2"));
     }
 }
 
 /**
+ * 步骤 1
  * 抽象享元角色
  */
 interface IFlyweight {
@@ -56,8 +57,15 @@ class ConcreteFlyweight implements IFlyweight {
     @Override
     public void operation(UnsharedConcreteFlyweight unshared) {
         System.out.println("object address: " + System.identityHashCode(this));
-        System.out.println("内部状态: " + intrinsicState);
-        System.out.println("外部状态: " + unshared.getExtrinsicState());
+        System.out.println("共享对象内部状态不变: " + intrinsicState);
+        System.out.println("共享对象外部状态可变: " + unshared.getExtrinsicState());
+
+        //通过外部状态的不同使同样的对象具体不一样的特征
+        if ("1".equals(unshared.getExtrinsicState())) {
+            System.out.println("你好");
+        } else {
+            System.out.println("Hello");
+        }
     }
 }
 

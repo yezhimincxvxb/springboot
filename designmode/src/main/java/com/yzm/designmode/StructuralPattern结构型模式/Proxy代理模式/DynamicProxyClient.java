@@ -3,6 +3,10 @@ package com.yzm.designmode.StructuralPattern结构型模式.Proxy代理模式;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 动态代理
@@ -12,7 +16,7 @@ import java.lang.reflect.Proxy;
  */
 public class DynamicProxyClient {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         Subject2 buy1 = (Subject2) new DynamicProxyHandler(new Buyer1("小明")).newProxyInstance();
         buy1.buy("进口汽车");
         System.out.println(buy1.pay(55000.0D));

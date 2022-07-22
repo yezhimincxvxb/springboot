@@ -44,7 +44,7 @@ class ProxyCglib implements MethodInterceptor {
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        System.out.println("调用方法名：" +method.getName());
+        System.out.println("调用方法名：" + method.getName());
         System.out.println("方法参数：" + Arrays.toString(args));
         Object object = proxy.invokeSuper(obj, args);
         System.out.println("返回结果：" + object);
@@ -55,7 +55,7 @@ class ProxyCglib implements MethodInterceptor {
 /**
  * 目标对象
  */
-class RealSubjectCglib  {
+class RealSubjectCglib {
     public String operate(String name) {
         return "RealSubjectCglib ";
     }

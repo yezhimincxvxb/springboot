@@ -27,18 +27,22 @@ public class CompositeClient {
         //创建一个文件类型
         AbstractFiles f1 = new Folder("父文件夹");
         //父文件夹内容
+        AbstractFiles file0 = new TextFile("动漫大全.txt");
         AbstractFiles file1 = new ImageFile("海贼王.png");
         AbstractFiles file2 = new ImageFile("七龙珠.jpg");
         AbstractFiles file3 = new ImageFile("火影忍者.gif");
         Folder folder = new Folder("一级子文件夹");
+        f1.add(file0);
         f1.add(file1);
         f1.add(file2);
         f1.add(file3);
         f1.add(folder);
         //一级子文件夹内容
+        AbstractFiles file40 = new TextFile("主角人物.txt");
         AbstractFiles file4 = new ImageFile("鸣人.jpg");
         AbstractFiles file5 = new ImageFile("路飞.gif");
         Folder folder2 = new Folder("二级子文件夹");
+        folder.add(file40);
         folder.add(file4);
         folder.add(file5);
         folder.add(folder2);
@@ -53,7 +57,10 @@ public class CompositeClient {
 
 }
 
-
+/**
+ * 步骤 1
+ * 文件接口：规范文件或文件夹行为
+ */
 abstract class AbstractFiles {
     abstract void add(AbstractFiles af);
 
@@ -65,11 +72,12 @@ abstract class AbstractFiles {
 }
 
 /**
+ * 步骤 2
  * 文件夹类：可以添加文件、文件夹
  */
 class Folder extends AbstractFiles {
-    private final List<AbstractFiles> list = new ArrayList<>();
     private final String name;
+    private final List<AbstractFiles> list = new ArrayList<>();
 
     public Folder(String name) {
         this.name = name;
@@ -101,6 +109,7 @@ class Folder extends AbstractFiles {
 }
 
 /**
+ * 步骤 3
  * 抽象文件类
  */
 abstract class AbstractFile extends AbstractFiles {
@@ -124,8 +133,23 @@ abstract class AbstractFile extends AbstractFiles {
 }
 
 /**
- * 具体文件类
+ * 步骤 4
+ * 具体文件类：可以是文本文件、图片文件、音频文件、视频文件等
  */
+class TextFile extends AbstractFile{
+
+    private final String name;
+
+    public TextFile(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void killVirus() {
+        System.out.println("对文件 " + name + " 进行杀毒");
+    }
+}
+
 class ImageFile extends AbstractFile{
 
     private final String name;
